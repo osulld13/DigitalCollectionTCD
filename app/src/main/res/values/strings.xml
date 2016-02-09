@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Digital Collections</string>
+    <string name="action_search">Search</string>
+    <string name="action_bookmarks">Bookmarks</string>
+    <string name="action_settings">Settings</string>
+    <string name="section_format">Hello World from section: %1$d</string>
+    <string name="title_activity_search">SearchActivity</string>
+    <string name="search_activity_title">Search</string>
+</resources>
