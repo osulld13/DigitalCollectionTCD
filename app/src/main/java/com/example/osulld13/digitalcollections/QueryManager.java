@@ -21,9 +21,8 @@ public class QueryManager {
 
     private final String TAG = QueryManager.class.getSimpleName();
 
-        // subject_lctgm%3AMaps
     public String constructSolrQuery(String freeQuery){
-        String query = "http://library02.tchpc.tcd.ie:8080/solr/dris/select?indent=on&version=2.2&q=standard&fq=" +
+        String query = "http://library02.tchpc.tcd.ie:8080/solr/dris/select?indent=on&version=2.2&q=subject_lctgm%3AMaps&fq=" +
                 urlQueryAdapter(freeQuery) +
                 "&start=0&rows=1000&fl=*%2Cscore&qt=standard&wt=standard&explainOther=&hl.fl=";
         return query;

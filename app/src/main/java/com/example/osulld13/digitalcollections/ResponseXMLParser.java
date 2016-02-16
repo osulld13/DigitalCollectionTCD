@@ -119,7 +119,7 @@ public class ResponseXMLParser {
 
             String name = parser.getName();
             if (name.equals(XMLParsingConstants.string_tag)){
-                allText += readText(parser);
+                allText += readText(parser) + " ";
             } else {
                 skip(parser);
             }

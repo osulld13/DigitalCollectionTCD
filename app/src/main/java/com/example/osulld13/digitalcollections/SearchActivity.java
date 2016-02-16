@@ -3,8 +3,10 @@ package com.example.osulld13.digitalcollections;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -26,7 +28,7 @@ public class SearchActivity extends AppCompatActivity {
     private ResponseXMLParser responseXMLParser;
     private ListView mListView;
 
-    private final int charsInListItemString = 30;
+    private final int charsInListItemString = 35;
 
     private ProgressBar mProgressBar;
 
@@ -51,13 +53,26 @@ public class SearchActivity extends AppCompatActivity {
         // Initialize response XML parser
         responseXMLParser = new ResponseXMLParser();
 
-        // Get ListView
+        // Get ListView and set its onItemClicked Listener
         mListView = (ListView) findViewById(R.id.searchListView);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(TAG, documentsRetrieved.get(position).toString());
+            }
+        });
 
+        mSearchBar.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+             @Override
+             public void onFocusChange(View v, boolean hasFocus) {
+                 mProgressBar.setVisibility(View.VISIBLE);
+             }
+         });
 
         mSearchBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                // Turn Progress Indicator on
                 initializeOnQueryTextListener(query);
                 return false;
             }
@@ -71,8 +86,6 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     private void initializeOnQueryTextListener(String query) {
-        // Turn Progress Indicator on
-        mProgressBar.setVisibility(View.VISIBLE);
         String solrQuery = queryManager.constructSolrQuery(query);
 
         InputStream responseStream = queryManager.queryDigitalRepositoryAsync((String) solrQuery);
@@ -102,7 +115,7 @@ public class SearchActivity extends AppCompatActivity {
         String[] documentIds = new String[documentsRetrieved.size()];
         int i = 0;
         for( Document doc : documentsRetrieved ){
-            documentIds[i] = doc.getText().substring(0, charsInListItemString);
+            documentIds[i] = doc.getText().substring(0, charsInListItemString) + "...";
             i++;
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
