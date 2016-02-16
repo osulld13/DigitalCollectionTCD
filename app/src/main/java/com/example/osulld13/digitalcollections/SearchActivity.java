@@ -26,6 +26,8 @@ public class SearchActivity extends AppCompatActivity {
     private ResponseXMLParser responseXMLParser;
     private ListView mListView;
 
+    private final int charsInListItemString = 30;
+
     private ProgressBar mProgressBar;
 
     @Override
@@ -100,7 +102,7 @@ public class SearchActivity extends AppCompatActivity {
         String[] documentIds = new String[documentsRetrieved.size()];
         int i = 0;
         for( Document doc : documentsRetrieved ){
-            documentIds[i] = doc.getPid();
+            documentIds[i] = doc.getText().substring(0, charsInListItemString);
             i++;
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(

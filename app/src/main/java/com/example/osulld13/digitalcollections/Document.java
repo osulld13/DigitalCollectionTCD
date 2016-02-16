@@ -12,10 +12,11 @@ public class Document{
     public String mTypeOfResource; // typeOfResource
     public String mText; // allText
 
-    public Document(String pid, String drisFolderNumber, String genre){
+    public Document(String pid, String drisFolderNumber, String genre, String allText){
         this.mPid = pid;
         this.mDrisFolderNumber = drisFolderNumber;
         this.mGenre = genre;
+        this.mText = allText;
     }
     /*
         Getter Methods
@@ -74,6 +75,6 @@ public class Document{
     }
 
     public String toString(){
-        return "Document: " + this.mPid + " " + this.mDrisFolderNumber + " " + this.mGenre + "\n";
+        return "Document: " + this.mPid + " " + this.mDrisFolderNumber + " " + this.mGenre + " " + this.mText + "\n";
     }
 }

@@ -76,6 +76,8 @@ public class ResponseXMLParser {
         String pid = null;
         String drisFolderNumber = null;
         String genre = null;
+        String allText = null;
+
         while (parser.next() != XmlPullParser.END_TAG) {
             if (parser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
@@ -86,13 +88,15 @@ public class ResponseXMLParser {
                 pid = readPid(parser);
             } else if (attributeValue.equals(XMLParsingConstants.dris_folder_attribute)) {
                 drisFolderNumber = readDrisFolder(parser);
-            }else if (attributeValue.equals(XMLParsingConstants.genre_attribute)) {
+            } else if (attributeValue.equals(XMLParsingConstants.genre_attribute)) {
                 genre = readGenre(parser);
-            }else {
+            } else if (attributeValue.equals(XMLParsingConstants.all_text_attribute)) {
+                allText = readAllText(parser);
+            } else {
                 skip(parser);
             }
         }
-        return new Document(pid, drisFolderNumber, genre);
+        return new Document(pid, drisFolderNumber, genre, allText);
     }
 
     // Processes pids in the feed.
@@ -101,6 +105,26 @@ public class ResponseXMLParser {
         String pid = readText(parser);
         parser.require(XmlPullParser.END_TAG, ns, XMLParsingConstants.string_tag);
         return pid;
+    }
+
+    // Processes AllText in the feed.
+    private String readAllText(XmlPullParser parser) throws IOException, XmlPullParserException {
+        parser.require(XmlPullParser.START_TAG, ns, XMLParsingConstants.array_tag);
+        String allText = "";
+
+        while (parser.next() != XmlPullParser.END_TAG) {
+            if (parser.getEventType() != XmlPullParser.START_TAG) {
+                continue;
+            }
+
+            String name = parser.getName();
+            if (name.equals(XMLParsingConstants.string_tag)){
+                allText += readText(parser);
+            } else {
+                skip(parser);
+            }
+        }
+        return allText;
     }
 
     // Processes drisFolders in the feed.
