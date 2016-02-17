@@ -36,6 +36,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.osulld13.digitalcollections.MainActivity" />
         </activity>
+        <activity
+            android:name=".DocumentView"
+            android:label="@string/title_activity_document_view"
+            android:theme="@style/AppTheme.NoActionBar" >
+        </activity>
     </application>
 
 </manifest>
