@@ -1,5 +1,9 @@
 package com.example.osulld13.digitalcollections;
 
+import java.lang.Integer;
+
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -58,60 +62,72 @@ public class SearchActivity extends AppCompatActivity {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Log.d(TAG, documentsRetrieved.get(position).toString());
+                goToDocumentView(position);
             }
         });
-
-        mSearchBar.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
-             @Override
-             public void onFocusChange(View v, boolean hasFocus) {
-                 mProgressBar.setVisibility(View.VISIBLE);
-             }
-         });
 
         mSearchBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 // Turn Progress Indicator on
-                initializeOnQueryTextListener(query);
+                new GetSearchResults().execute(query);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                // TODO: Implement search suggestions
                 return false;
             }
         });
 
     }
 
-    private void initializeOnQueryTextListener(String query) {
-        String solrQuery = queryManager.constructSolrQuery(query);
+    // Creates an asynchronous task that gets the queries fedora for the results to the search
+    private class GetSearchResults extends AsyncTask<String, Integer, List<Document>>{
 
-        InputStream responseStream = queryManager.queryDigitalRepositoryAsync((String) solrQuery);
+        protected List<Document> doInBackground(String... queries){
+            String query = queries[0];
 
-        List<Document> documentList = null;
+            String solrQuery = queryManager.constructSolrQuery(query);
 
-        try {
-            documentList = responseXMLParser.parseSearchResponse(responseStream);
-        } catch (java.io.IOException e){
-            // Add error dialogue
-            e.printStackTrace();
-        } catch (XmlPullParserException e){
-            // Add error dialogue
-            e.printStackTrace();
+            InputStream responseStream = queryManager.queryDigitalRepositoryAsync((String) solrQuery);
+
+            List<Document> documentList = null;
+
+            try {
+                documentList = responseXMLParser.parseSearchResponse(responseStream);
+            } catch (java.io.IOException e){
+                // Add error dialogue
+                e.printStackTrace();
+            } catch (XmlPullParserException e){
+                // Add error dialogue
+                e.printStackTrace();
+            }
+
+            // Assign the retrieved documents to the documentsRetrieved List
+            return documentList;
         }
 
-        // Assign the retrieved documents to the documentsRetrieved List
-        documentsRetrieved = documentList;
+        protected void onProgressUpdate(Integer... progress) {
 
-        setListToRetrievedDocuments();
+        }
 
-        //Turn Progress indicator off
-        mProgressBar.setVisibility(View.INVISIBLE);
+        protected void onPreExecute() {
+            //Turn Progress indicator off
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
+
+        protected void onPostExecute (List<Document> result) {
+            //Turn Progress indicator off
+            setListToRetrievedDocuments(result);
+            mProgressBar.setVisibility(View.INVISIBLE);
+        }
     }
 
-    private void setListToRetrievedDocuments() {
+
+    private void setListToRetrievedDocuments(List<Document> documentsRetrieved) {
+        this.documentsRetrieved = documentsRetrieved;
         String[] documentIds = new String[documentsRetrieved.size()];
         int i = 0;
         for( Document doc : documentsRetrieved ){
@@ -135,4 +151,9 @@ public class SearchActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
+    private void goToDocumentView(int listPosition){
+        Intent documentViewIntent = new Intent(this, DocumentView.class);
+        documentViewIntent.putExtra("document", documentsRetrieved.get(listPosition).toArray());
+        startActivity(documentViewIntent);
+    }
 }

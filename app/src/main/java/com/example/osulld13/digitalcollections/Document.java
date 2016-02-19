@@ -77,4 +77,9 @@ public class Document{
     public String toString(){
         return "Document: " + this.mPid + " " + this.mDrisFolderNumber + " " + this.mGenre + " " + this.mText + "\n";
     }
+
+    public String[] toArray(){
+        String [] docArray = {this.mPid, this.mDrisFolderNumber, this.mText, this.mGenre, this.mLang, this.mTypeOfResource};
+        return docArray;
+    }
 }

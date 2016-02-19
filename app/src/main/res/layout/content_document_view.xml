@@ -7,4 +7,11 @@
     tools:showIn="@layout/activity_document_view"
     tools:context="com.example.osulld13.digitalcollections.DocumentView">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/testDocumenTextView"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 </RelativeLayout>
