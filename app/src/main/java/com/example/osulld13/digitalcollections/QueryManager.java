@@ -1,5 +1,7 @@
 package com.example.osulld13.digitalcollections;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -26,6 +28,29 @@ public class QueryManager {
                 urlQueryAdapter(freeQuery) +
                 "&start=0&rows=1000&fl=*%2Cscore&qt=standard&wt=standard&explainOther=&hl.fl=";
         return query;
+    }
+
+    public Bitmap getImageResource(String drisFolderNum, String pid){
+        URL url = getImageResourceURL(drisFolderNum, pid);
+        Bitmap bmp = null;
+        try {
+             bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+        } catch (java.io.IOException e){
+            e.printStackTrace();
+        }
+        return bmp;
+    }
+
+    private URL getImageResourceURL(String drisFolderNum, String pid){
+        String urlString =  "http://digitalcollections.tcd.ie/content/"+drisFolderNum+"/jpeg/"+pid+"_LO.jpg";
+        URL url = null;
+        try {
+            url =  new URL(urlString);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        Log.d(TAG, url.toString());
+        return url;
     }
 
     public InputStream queryDigitalRepositoryAsync(String url){
