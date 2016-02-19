@@ -6,5 +6,8 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_activity_search">SearchActivity</string>
     <string name="search_activity_title">Search</string>
-    <string name="title_activity_document_view">DocumentView</string>
+    <string name="title_activity_document_view">Document View</string>
+    <string name="doc_view_previous_button_label">&lt;&lt; prev</string>
+    <string name="doc_view_default_page_label">Page</string>
+    <string name="doc_view_next_button_label">next &gt;&gt;</string>
 </resources>

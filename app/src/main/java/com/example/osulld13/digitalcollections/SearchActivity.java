@@ -153,7 +153,7 @@ public class SearchActivity extends AppCompatActivity {
 
     private void goToDocumentView(int listPosition){
         Intent documentViewIntent = new Intent(this, DocumentView.class);
-        documentViewIntent.putExtra("document", documentsRetrieved.get(listPosition).toArray());
+        documentViewIntent.putExtra(AppConstants.documentTransferString, documentsRetrieved.get(listPosition).toArray());
         startActivity(documentViewIntent);
     }
 }
