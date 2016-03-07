@@ -16,34 +16,36 @@
         android:layout_above="@+id/linearLayout"
         android:layout_alignParentTop="true" />
 
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/linearLayout"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true">
 
-        <Button
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/doc_view_previous_button_label"
-            android:id="@+id/documentViewPreviousButton" />
+            android:id="@+id/linearLayout"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true">
+            <!--
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/doc_view_previous_button_label"
+                android:id="@+id/documentViewPreviousButton" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="@string/doc_view_default_page_label"
-            android:id="@+id/documentViewImageLabel" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text="@string/doc_view_default_page_label"
+                android:id="@+id/documentViewImageLabel" />
 
-        <Button
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/doc_view_next_button_label"
-            android:id="@+id/documentViewNextButton" />
-    </LinearLayout>
+            <Button
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/doc_view_next_button_label"
+                android:id="@+id/documentViewNextButton" />
+            -->
+        </LinearLayout>
 </RelativeLayout>

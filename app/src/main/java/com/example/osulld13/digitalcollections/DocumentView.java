@@ -33,6 +33,12 @@ public class DocumentView extends AppCompatActivity {
         //Retrieves doc info passed from previous activity
         docInfo = getIntent().getStringArrayExtra(AppConstants.documentTransferString);
 
+        // Add progress bar to XML views and then call to make visible
+        mProgressBar = (ProgressBar) findViewById(R.id.documentViewProgressBar);
+        mProgressBar.setVisibility(View.INVISIBLE);
+
+        mImageView = (ImageView) findViewById(R.id.documentViewImageView);
+
         GetDocumentImage getImage = new GetDocumentImage();
         getImage.execute(docInfo[0], docInfo[1]);
     }
@@ -59,8 +65,9 @@ public class DocumentView extends AppCompatActivity {
     private class GetDocumentImage extends AsyncTask<String, Integer, Bitmap> {
 
         protected Bitmap doInBackground(String... docInfo){
-            Log.d(TAG, docInfo[1]);
-            Log.d(TAG, docInfo[0]);
+            if(android.os.Debug.isDebuggerConnected()){
+                android.os.Debug.waitForDebugger();
+            }
             return mQueryManager.getImageResource(docInfo[1], docInfo[0]);
         }
 
@@ -75,6 +82,9 @@ public class DocumentView extends AppCompatActivity {
 
         protected void onPostExecute (Bitmap result) {
             //Turn Progress indicator off
+            if(android.os.Debug.isDebuggerConnected()){
+                android.os.Debug.waitForDebugger();
+            }
             mImageView.setImageBitmap(result);
             mProgressBar.setVisibility(View.INVISIBLE);
         }

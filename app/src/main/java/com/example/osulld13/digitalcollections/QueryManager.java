@@ -34,11 +34,48 @@ public class QueryManager {
         URL url = getImageResourceURL(drisFolderNum, pid);
         Bitmap bmp = null;
         try {
-             bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+            // Make sure image complies with memory limits
+
+            // Load in info
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(url.openConnection().getInputStream(), null, options);
+
+            // Calculate whether to load in resampled image
+            options.inSampleSize = calculateInSampleSize(options, 1000, 1000);
+
+            //Load in resampled image
+            options.inJustDecodeBounds = false;
+            bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream(), null, options);
+
         } catch (java.io.IOException e){
             e.printStackTrace();
         }
         return bmp;
+    }
+
+    // Code got from http://developer.android.com/training/displaying-bitmaps/load-bitmap.html#load-bitmap
+    public static int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) > reqHeight
+                    && (halfWidth / inSampleSize) > reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
     }
 
     private URL getImageResourceURL(String drisFolderNum, String pid){
