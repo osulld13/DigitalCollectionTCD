@@ -2,9 +2,11 @@ package com.example.osulld13.digitalcollections;
 
 import java.lang.Integer;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -31,6 +33,7 @@ public class SearchActivity extends AppCompatActivity {
     private QueryManager queryManager;
     private ResponseXMLParser responseXMLParser;
     private ListView mListView;
+    private AlertDialog.Builder builder;
 
     private final int charsInListItemString = 35;
 
@@ -43,6 +46,9 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
 
         setUpToolbar();
+
+        //Add alert dialogue builder
+        builder = new AlertDialog.Builder(SearchActivity.this);
 
         // Add progress bar to XML views and then call to make visible
         mProgressBar = (ProgressBar) findViewById(R.id.searchProgressBar);
@@ -88,26 +94,32 @@ public class SearchActivity extends AppCompatActivity {
     private class GetSearchResults extends AsyncTask<String, Integer, List<Document>>{
 
         protected List<Document> doInBackground(String... queries){
-            String query = queries[0];
-
-            String solrQuery = queryManager.constructSolrQuery(query);
-
-            InputStream responseStream = queryManager.queryDigitalRepositoryAsync((String) solrQuery);
-
-            List<Document> documentList = null;
-
             try {
-                documentList = responseXMLParser.parseSearchResponse(responseStream);
-            } catch (java.io.IOException e){
-                // Add error dialogue
-                e.printStackTrace();
-            } catch (XmlPullParserException e){
-                // Add error dialogue
-                e.printStackTrace();
-            }
 
-            // Assign the retrieved documents to the documentsRetrieved List
-            return documentList;
+                String query = queries[0];
+
+                String solrQuery = queryManager.constructSolrQuery(query);
+
+                InputStream responseStream = queryManager.queryDigitalRepositoryAsync((String) solrQuery);
+
+                List<Document> documentList = null;
+
+                try {
+                    documentList = responseXMLParser.parseSearchResponse(responseStream);
+                } catch (java.io.IOException e){
+                    // Add error dialogue
+                    e.printStackTrace();
+                } catch (XmlPullParserException e){
+                    // Add error dialogue
+                    e.printStackTrace();
+                }
+
+                // Assign the retrieved documents to the documentsRetrieved List
+                return documentList;
+
+            } catch (java.lang.RuntimeException e){
+                return null;
+            }
         }
 
         protected void onProgressUpdate(Integer... progress) {
@@ -120,8 +132,25 @@ public class SearchActivity extends AppCompatActivity {
         }
 
         protected void onPostExecute (List<Document> result) {
-            //Turn Progress indicator off
-            setListToRetrievedDocuments(result);
+            // if result retrieved
+            if (result != null) {
+                //Turn Progress indicator off
+                setListToRetrievedDocuments(result);
+            }
+
+            // if no result retrieved
+            else {
+                builder.setMessage(R.string.network_error_message)
+                        .setTitle(R.string.network_error_title);
+                builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User clicked OK button
+                    }
+                });
+                final AlertDialog networkErrorDialog = builder.create();
+                networkErrorDialog.show();
+            }
+
             mProgressBar.setVisibility(View.INVISIBLE);
         }
     }

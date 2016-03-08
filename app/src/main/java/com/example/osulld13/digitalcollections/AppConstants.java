@@ -8,4 +8,5 @@ public class AppConstants {
     public static final String documentTransferString = "document";
     public static final int documentImageWidth = 1500;
     public static final int documentImageHeight = 1500;
+    public static final String listOfObjectsInDocumentDelimeter = "info:fedora/dris:";
 }

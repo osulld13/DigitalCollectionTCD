@@ -10,4 +10,7 @@
     <string name="doc_view_previous_button_label">&lt;&lt; prev</string>
     <string name="doc_view_default_page_label">Page</string>
     <string name="doc_view_next_button_label">next &gt;&gt;</string>
+    <string name="network_error_message">Check your data connection!</string>
+    <string name="network_error_title">Network Error</string>
+    <string name="ok">OK</string>
 </resources>

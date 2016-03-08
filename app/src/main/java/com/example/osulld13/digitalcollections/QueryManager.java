@@ -24,9 +24,14 @@ public class QueryManager {
     private final String TAG = QueryManager.class.getSimpleName();
 
     public String constructSolrQuery(String freeQuery){
-        String query = "http://library02.tchpc.tcd.ie:8080/solr/dris/select?indent=on&version=2.2&q=subject_lctgm%3AMaps&fq=" +
+        String query = "http://library02.tchpc.tcd.ie:8080/solr/dris/select?indent=on&version=2.2&q=subject_lctgm%3A[*%20TO%20*]&fq=" +
                 urlQueryAdapter(freeQuery) +
                 "&start=0&rows=1000&fl=*%2Cscore&qt=standard&wt=standard&explainOther=&hl.fl=";
+        return query;
+    }
+
+    public String constructListOfObjectsInCollectionQuery(String drisFolderNumber){
+        String query =  "http://digitalcollections.tcd.ie/orderedListOfObjectsInCollection.php?folder=" + urlQueryAdapter(drisFolderNumber);
         return query;
     }
 
@@ -128,7 +133,7 @@ public class QueryManager {
 
     }
 
-    private String readStringFromInputStream(InputStream inputStream) throws IOException {
+    public String readStringFromInputStream(InputStream inputStream) throws IOException {
         BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
         StringBuilder total = new StringBuilder();
         String line;
