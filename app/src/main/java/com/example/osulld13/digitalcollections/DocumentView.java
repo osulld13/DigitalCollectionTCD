@@ -30,11 +30,12 @@ public class DocumentView extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_document_view);
-        // Set up toolbar
-        setUpToolbar();
 
         //Retrieves doc info passed from previous activity
         docInfo = getIntent().getStringArrayExtra(AppConstants.documentTransferString);
+
+        // Set up toolbar
+        setUpToolbar();
 
         // Add progress bar to XML views and then call to make visible
         mProgressBar = (ProgressBar) findViewById(R.id.documentViewProgressBar);
@@ -63,6 +64,7 @@ public class DocumentView extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle(docInfo[2]);
     }
 
     // Creates an asynchronous task that gets the image for the document view
@@ -89,9 +91,9 @@ public class DocumentView extends AppCompatActivity {
             if(android.os.Debug.isDebuggerConnected()){
                 android.os.Debug.waitForDebugger();
             }
+            mProgressBar.setVisibility(View.INVISIBLE);
             mImageView.setImageBitmap(result);
             mAttacher.update();
-            mProgressBar.setVisibility(View.INVISIBLE);
         }
     }
 
