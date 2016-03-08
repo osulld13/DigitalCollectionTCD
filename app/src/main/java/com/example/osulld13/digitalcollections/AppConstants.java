@@ -6,4 +6,6 @@ package com.example.osulld13.digitalcollections;
 public class AppConstants {
     //Strings
     public static final String documentTransferString = "document";
+    public static final int documentImageWidth = 2000;
+    public static final int documentImageHeight = 2000;
 }

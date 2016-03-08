@@ -12,12 +12,15 @@ import android.view.Window;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import uk.co.senab.photoview.PhotoViewAttacher;
+
 import java.util.List;
 
 public class DocumentView extends AppCompatActivity {
 
     private final String TAG = QueryManager.class.getSimpleName();
     private String[] docInfo; // Pid, DrisFolderNumber, Text, Genre, Lang, TypeOfResource
+    private PhotoViewAttacher mAttacher;
     private ImageView mImageView;
     private QueryManager mQueryManager = new QueryManager();
     private ProgressBar mProgressBar;
@@ -38,6 +41,7 @@ public class DocumentView extends AppCompatActivity {
         mProgressBar.setVisibility(View.INVISIBLE);
 
         mImageView = (ImageView) findViewById(R.id.documentViewImageView);
+        mAttacher = new PhotoViewAttacher(mImageView);
 
         GetDocumentImage getImage = new GetDocumentImage();
         getImage.execute(docInfo[0], docInfo[1]);
@@ -86,6 +90,7 @@ public class DocumentView extends AppCompatActivity {
                 android.os.Debug.waitForDebugger();
             }
             mImageView.setImageBitmap(result);
+            mAttacher.update();
             mProgressBar.setVisibility(View.INVISIBLE);
         }
     }

@@ -42,7 +42,9 @@ public class QueryManager {
             BitmapFactory.decodeStream(url.openConnection().getInputStream(), null, options);
 
             // Calculate whether to load in resampled image
-            options.inSampleSize = calculateInSampleSize(options, 1000, 1000);
+            options.inSampleSize = calculateInSampleSize(options,
+                    AppConstants.documentImageWidth,
+                    AppConstants.documentImageHeight);
 
             //Load in resampled image
             options.inJustDecodeBounds = false;
@@ -71,7 +73,7 @@ public class QueryManager {
             // height and width larger than the requested height and width.
             while ((halfHeight / inSampleSize) > reqHeight
                     && (halfWidth / inSampleSize) > reqWidth) {
-                inSampleSize *= 2;
+                inSampleSize *= 4;
             }
         }
 
