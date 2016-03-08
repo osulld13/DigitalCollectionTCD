@@ -50,6 +50,7 @@ public class SearchActivity extends AppCompatActivity {
 
         // Get search bar and set listener for searching
         mSearchBar = (SearchView) findViewById(R.id.searchView);
+        mSearchBar.onActionViewExpanded();
 
         // Initialize Query constructor
         queryManager = new QueryManager();
