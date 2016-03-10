@@ -186,4 +186,5 @@ public class SearchActivity extends AppCompatActivity {
         documentViewIntent.putExtra(AppConstants.documentTransferString, documentsRetrieved.get(listPosition).toArray());
         startActivity(documentViewIntent);
     }
+
 }
