@@ -4,7 +4,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -20,15 +19,11 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import uk.co.senab.photoview.PhotoViewAttacher;
 
 import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class DocumentView extends AppCompatActivity {
 
@@ -74,11 +69,17 @@ public class DocumentView extends AppCompatActivity {
 
         initializeDocImage();
 
+        // Get image by passing pid and dris folder number
         GetDocumentImage getImage = new GetDocumentImage();
         getImage.execute(docInfo[0], docInfo[1]);
 
-        GetDocumentData getData = new GetDocumentData();
-        getData.execute(docInfo[1]);
+        // Get image by passing dris folder number and pid
+        GetCollectionPIds getCollectionPIds = new GetCollectionPIds();
+        getCollectionPIds.execute(docInfo[1]);
+
+        // Get metadata for document
+        GetDocumentMetadata getDocumentMetadata = new GetDocumentMetadata();
+        getDocumentMetadata.execute(docInfo[0]);
 
     }
 
@@ -321,7 +322,7 @@ public class DocumentView extends AppCompatActivity {
     }
 
     // Creates an asynchronous task that gets the data for the document
-    private class GetDocumentData extends AsyncTask<String, Integer, String> {
+    private class GetCollectionPIds extends AsyncTask<String, Integer, String> {
 
         protected String doInBackground(String... info){
             try {
@@ -393,6 +394,36 @@ public class DocumentView extends AppCompatActivity {
                 final AlertDialog networkErrorDialog = builder.create();
                 networkErrorDialog.show();
             }*/
+        }
+    }
+
+    private class GetDocumentMetadata extends AsyncTask<String, String, String>{
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                if (android.os.Debug.isDebuggerConnected()) {
+                    android.os.Debug.waitForDebugger();
+                }
+                String metadataQuery = mQueryManager.constructDocMetadataQuery(params[0]);
+                Log.d(TAG, metadataQuery);
+                InputStream responseStream = mQueryManager.queryDigitalRepositoryAsync(metadataQuery);
+                String response = null;
+                try {
+                    response = mQueryManager.readStringFromInputStream(responseStream);
+                    Log.d(TAG, response);
+                } catch (java.io.IOException e){
+                    e.printStackTrace();
+                }
+                return response;
+            } catch(java.lang.RuntimeException e){
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(String result){
+
         }
     }
 

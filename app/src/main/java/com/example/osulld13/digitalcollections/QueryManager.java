@@ -35,6 +35,11 @@ public class QueryManager {
         return query;
     }
 
+    public String constructDocMetadataQuery(String pId){
+        String query = "http://digitalcollections.tcd.ie/home/getMeta.php?pid=" + pId;
+        return query;
+    }
+
     public Bitmap getImageResource(String drisFolderNum, String pid){
         URL url = getImageResourceURL(drisFolderNum, pid);
         Bitmap bmp = null;
