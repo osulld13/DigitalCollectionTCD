@@ -1,7 +1,10 @@
 package com.example.osulld13.digitalcollections;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -11,8 +14,10 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
 
@@ -32,6 +37,10 @@ public class DocumentView extends AppCompatActivity {
     private QueryManager mQueryManager = new QueryManager();
     private ProgressBar mProgressBar;
     private AlertDialog.Builder builder;
+    private TextView mTextView;
+    private Button mPrevButton;
+    private Button mNextButton;
+    private int currentPageIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +61,10 @@ public class DocumentView extends AppCompatActivity {
         mProgressBar = (ProgressBar) findViewById(R.id.documentViewProgressBar);
         mProgressBar.setVisibility(View.INVISIBLE);
 
+
+        //Get text view
+        mTextView = (TextView) findViewById(R.id.docViewTextView);
+
         mImageView = (ImageView) findViewById(R.id.documentViewImageView);
         mAttacher = new PhotoViewAttacher(mImageView);
 
@@ -60,6 +73,94 @@ public class DocumentView extends AppCompatActivity {
 
         GetDocumentData getData = new GetDocumentData();
         getData.execute(docInfo[1]);
+
+    }
+
+    private void setUpNavigationButtons() {
+        // Get buttons
+        mNextButton = (Button) findViewById(R.id.docViewNextButton);
+        mNextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 0 moves page forward
+                mNextButton.setBackgroundColor(Color.parseColor("#80FFFFFF"));
+                changeDocumentPage(0);
+            }
+        });
+
+        mPrevButton = (Button) findViewById(R.id.docViewPreviousButton);
+        mPrevButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 1 movespage back
+                mPrevButton.setBackgroundColor(Color.parseColor("#80FFFFFF"));
+                changeDocumentPage(1);
+            }
+        });
+
+        // Remove Drawables for buttons if at end or start of doc
+        if (currentPageIndex == 0){
+            mPrevButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Do nothing
+                }
+            });
+            mPrevButton.setCompoundDrawables(null, null, null, null);
+        }
+
+        else if (currentPageIndex >= docPageIds.size() - 1){
+            mNextButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    // Do nothing
+                }
+            });
+            mNextButton.setCompoundDrawables(null, null, null, null);
+        }
+    }
+
+    private void changeDocumentPage(int movVal){
+
+
+        String newPid = "";
+        boolean changePage = false;
+
+        //block until docPageIds is initialized
+        while(docPageIds == null){
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // move forward
+        if (movVal == 0 &&
+                currentPageIndex < (docPageIds.size() - 1)) {
+            newPid = docPageIds.get(currentPageIndex + 1);
+            changePage = true;
+        } else if (currentPageIndex > 0) {
+            newPid = docPageIds.get(currentPageIndex - 1);
+            changePage = true;
+        }
+
+        if (changePage) {
+
+            Log.d(TAG, "New page number is " + String.valueOf(newPid));
+
+            // Copy docInfo string array and change pid to new pid. Now this can be passed to the new docView
+            String[] newDocInfo = docInfo;
+            newDocInfo[0] = newPid;
+
+            Intent newDocumentViewIntent = new Intent(this, DocumentView.class);
+            newDocumentViewIntent.putExtra(AppConstants.documentTransferString, newDocInfo);
+
+            startActivity(newDocumentViewIntent);
+            finish();
+
+        }
+
     }
 
     @Override
@@ -179,6 +280,17 @@ public class DocumentView extends AppCompatActivity {
                 resultData.remove(0);
 
                 docPageIds = resultData;
+
+                for (int i = 0; i < docPageIds.size(); i++){
+                    if (docInfo[0].equals(docPageIds.get(i))){
+                        currentPageIndex = i;
+                    }
+                }
+
+                Log.d(TAG, "Current page index: " + String.valueOf(currentPageIndex));
+                mTextView.setText("Page " + String.valueOf(currentPageIndex + 1) + " of " + String.valueOf(docPageIds.size()));
+
+                setUpNavigationButtons();
 
             }
 
