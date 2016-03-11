@@ -1,6 +1,7 @@
 package com.example.osulld13.digitalcollections;
 
 import android.util.JsonReader;
+import android.util.JsonToken;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,7 +48,34 @@ public class ResponseJSONParser {
                         title = readTitleInfo(reader, title);
                     }
                     else if (name.equals(JSONParsingConstants.originInfo)){
-
+                        reader.beginObject();
+                        while(reader.hasNext()){
+                            name = reader.nextName();
+                            if (name.equals(JSONParsingConstants.place)){
+                                reader.beginObject();
+                                while(reader.hasNext()) {
+                                    name = reader.nextName();
+                                    if(name.equals(JSONParsingConstants.placeTerm)){
+                                        reader.beginObject();
+                                        while(reader.hasNext()) {
+                                            name = reader.nextName();
+                                            if (name.equals(JSONParsingConstants.dollar)){
+                                                originPlace = reader.nextString();
+                                            }
+                                            else{
+                                                reader.skipValue();
+                                            }
+                                        }
+                                    }
+                                    else{
+                                        reader.skipValue();
+                                    }
+                                }
+                            }
+                            else{
+                                reader.skipValue();
+                            }
+                        }
                     }
                     else{
                         reader.skipValue();
@@ -73,13 +101,17 @@ public class ResponseJSONParser {
     private String readTitleInfo(JsonReader reader, String title) throws IOException {
         String name;
         boolean titleFound = false;
-        try{
+
+        if (reader.peek() == JsonToken.BEGIN_ARRAY){
             reader.beginArray();
-            while(reader.hasNext() && titleFound == true){
+            while(reader.hasNext()){
                 reader.beginObject();
-                while(reader.hasNext() && titleFound == true){
+                while(reader.hasNext()){
                     name = reader.nextName();
-                    if (name.equals(JSONParsingConstants.title)){
+                    if(titleFound == true){
+                        reader.skipValue();
+                    }
+                    else if (name.equals(JSONParsingConstants.title)){
                         title = reader.nextString();
                         titleFound = true;
                     }
@@ -90,8 +122,9 @@ public class ResponseJSONParser {
                 reader.endObject();
             }
             reader.endArray();
-        } catch(Exception e){
+        }
 
+        else {
             reader.beginObject();
             while(reader.hasNext()){
                 name = reader.nextName();
@@ -102,7 +135,7 @@ public class ResponseJSONParser {
                     reader.skipValue();
                 }
             }
-
+            reader.endObject();
         }
         return title;
     }
