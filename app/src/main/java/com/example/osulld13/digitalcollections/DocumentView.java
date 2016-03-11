@@ -17,7 +17,10 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.SeekBar;
 import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
 
@@ -40,7 +43,10 @@ public class DocumentView extends AppCompatActivity {
     private TextView mTextView;
     private Button mPrevButton;
     private Button mNextButton;
+    private SeekBar mSeekbar;
+    private TextView mSeekBarTextView;
     private int currentPageIndex;
+    boolean navBarVisible = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,9 +70,9 @@ public class DocumentView extends AppCompatActivity {
 
         //Get text view
         mTextView = (TextView) findViewById(R.id.docViewTextView);
+        mSeekBarTextView = (TextView) findViewById((R.id.seekBarTextView));
 
-        mImageView = (ImageView) findViewById(R.id.documentViewImageView);
-        mAttacher = new PhotoViewAttacher(mImageView);
+        initializeDocImage();
 
         GetDocumentImage getImage = new GetDocumentImage();
         getImage.execute(docInfo[0], docInfo[1]);
@@ -74,6 +80,42 @@ public class DocumentView extends AppCompatActivity {
         GetDocumentData getData = new GetDocumentData();
         getData.execute(docInfo[1]);
 
+    }
+
+    private void initializeDocImage() {
+        mImageView = (ImageView) findViewById(R.id.documentViewImageView);
+        mAttacher = new PhotoViewAttacher(mImageView);
+        mAttacher.setOnViewTapListener(new PhotoViewAttacher.OnViewTapListener() {
+            @Override
+            public void onViewTap(View view, float x, float y) {
+                toggleNavBarVisibility();
+            }
+        });
+    }
+
+    private void toggleNavBarVisibility() {
+        if (mNextButton != null
+            && mPrevButton!= null
+            && mTextView!= null
+            && mSeekbar!= null
+            && mSeekBarTextView!= null) {
+
+            if (navBarVisible == true) {
+                mNextButton.setVisibility(View.INVISIBLE);
+                mPrevButton.setVisibility(View.INVISIBLE);
+                mTextView.setVisibility(View.INVISIBLE);
+                mSeekbar.setVisibility(View.INVISIBLE);
+                mSeekBarTextView.setVisibility(View.INVISIBLE);
+                navBarVisible = false;
+            } else {
+                mNextButton.setVisibility(View.VISIBLE);
+                mPrevButton.setVisibility(View.VISIBLE);
+                mTextView.setVisibility(View.VISIBLE);
+                mSeekbar.setVisibility(View.VISIBLE);
+                mSeekBarTextView.setVisibility(View.VISIBLE);
+                navBarVisible = true;
+            }
+        }
     }
 
     private void setUpNavigationButtons() {
@@ -118,6 +160,50 @@ public class DocumentView extends AppCompatActivity {
             });
             mNextButton.setCompoundDrawables(null, null, null, null);
         }
+    }
+
+    private void setUpSeekbar(int length){
+        mSeekbar = (SeekBar) findViewById(R.id.docViewSeekBar);
+        mSeekbar.setBottom(0);
+        mSeekbar.setMax(length - 1);
+        mSeekbar.setProgress(currentPageIndex);
+        mSeekBarTextView.setText(String.valueOf(currentPageIndex + 1));
+
+        mSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            private int progressVal = 0;
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                progressVal = progress;
+                mSeekBarTextView.setText(String.valueOf(progress + 1));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                goToPageWithIndex(progressVal);
+            }
+
+        });
+    }
+
+    private void goToPageWithIndex(int index) {
+        String newPid = docPageIds.get(index);
+        Log.d(TAG, "New page number is " + String.valueOf(newPid));
+
+        // Copy docInfo string array and change pid to new pid. Now this can be passed to the new docView
+        String[] newDocInfo = docInfo;
+        newDocInfo[0] = newPid;
+
+        Intent newDocumentViewIntent = new Intent(this, DocumentView.class);
+        newDocumentViewIntent.putExtra(AppConstants.documentTransferString, newDocInfo);
+
+        startActivity(newDocumentViewIntent);
+        finish();
     }
 
     private void changeDocumentPage(int movVal){
@@ -291,6 +377,7 @@ public class DocumentView extends AppCompatActivity {
                 mTextView.setText("Page " + String.valueOf(currentPageIndex + 1) + " of " + String.valueOf(docPageIds.size()));
 
                 setUpNavigationButtons();
+                setUpSeekbar(docPageIds.size());
 
             }
 
