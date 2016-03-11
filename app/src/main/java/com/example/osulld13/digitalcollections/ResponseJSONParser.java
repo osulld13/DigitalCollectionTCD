@@ -39,14 +39,14 @@ public class ResponseJSONParser {
         reader.beginObject();
         while(reader.hasNext()){
             String name = reader.nextName();
-            if (name.equals("mods")){
+            if (name.equals(JSONParsingConstants.mods)){
                 reader.beginObject();
                 while(reader.hasNext()){
                     name = reader.nextName();
-                    if(name.equals("titleInfo")){
+                    if(name.equals(JSONParsingConstants.titleInfo)){
                         title = readTitleInfo(reader, title);
                     }
-                    else if (name.equals("originInfo")){
+                    else if (name.equals(JSONParsingConstants.originInfo)){
 
                     }
                     else{
@@ -79,7 +79,7 @@ public class ResponseJSONParser {
                 reader.beginObject();
                 while(reader.hasNext() && titleFound == true){
                     name = reader.nextName();
-                    if (name.equals("title")){
+                    if (name.equals(JSONParsingConstants.title)){
                         title = reader.nextString();
                         titleFound = true;
                     }
@@ -95,7 +95,7 @@ public class ResponseJSONParser {
             reader.beginObject();
             while(reader.hasNext()){
                 name = reader.nextName();
-                if (name.equals("title")){
+                if (name.equals(JSONParsingConstants.title)){
                     title = reader.nextString();
                 }
                 else{

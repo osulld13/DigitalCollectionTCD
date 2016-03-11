@@ -19,12 +19,12 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import uk.co.senab.photoview.PhotoViewAttacher;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import uk.co.senab.photoview.PhotoViewAttacher;
 
 public class DocumentView extends AppCompatActivity {
 
