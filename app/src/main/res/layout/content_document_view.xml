@@ -88,7 +88,7 @@
             android:layout_width="wrap_content"
             android:layout_height="45dp"
             android:id="@+id/docViewPreviousButton"
-            android:background="#80000000"
+            android:background="@color/docViewNavBarElementColor"
             android:drawableTop="@drawable/ic_arrow_back_white_24dp"
             android:textColor="@color/android:white"
             android:layout_alignParentBottom="true"
@@ -101,7 +101,7 @@
             android:layout_height="45dp"
             android:id="@+id/docViewNextButton"
             android:drawableTop="@drawable/ic_arrow_forward_white_24dp"
-            android:background="#80000000"
+            android:background="@color/docViewNavBarElementColor"
             android:textColor="@color/android:white"
             android:padding="10dp"
             android:layout_alignParentBottom="true"
@@ -118,7 +118,7 @@
             android:layout_toEndOf="@id/docViewPreviousButton"
             android:layout_toStartOf="@id/docViewNextButton"
             android:text=""
-            android:background="#80000000"
+            android:background="@color/docViewNavBarElementColor"
             android:textColor="@color/android:white"
             android:padding="10dp"
             android:id="@+id/docViewTextView"
@@ -135,7 +135,7 @@
             android:layout_above="@+id/docViewPreviousButton"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:background="#80000000"
+            android:background="@color/docViewNavBarElementColor"
             android:gravity="center"
             android:textAlignment="center"/>
 
@@ -148,7 +148,7 @@
             android:layout_alignParentEnd="true"
             android:layout_toRightOf="@id/seekBarTextView"
             android:layout_toEndOf="@id/seekBarTextView"
-            android:background="#80000000"/>
+            android:background="@color/docViewNavBarElementColor"/>
 
     </RelativeLayout>
 </RelativeLayout>

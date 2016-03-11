@@ -24,6 +24,7 @@ import uk.co.senab.photoview.PhotoViewAttacher;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class DocumentView extends AppCompatActivity {
 
@@ -126,7 +127,7 @@ public class DocumentView extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // 0 moves page forward
-                mNextButton.setBackgroundColor(Color.parseColor("#80FFFFFF"));
+                mNextButton.setBackgroundColor(Color.parseColor(AppConstants.navigationButtonHighlightColor));
                 changeDocumentPage(0);
             }
         });
@@ -136,7 +137,7 @@ public class DocumentView extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 // 1 movespage back
-                mPrevButton.setBackgroundColor(Color.parseColor("#80FFFFFF"));
+                mPrevButton.setBackgroundColor(Color.parseColor(AppConstants.navigationButtonHighlightColor));
                 changeDocumentPage(1);
             }
         });
@@ -266,7 +267,7 @@ public class DocumentView extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(docInfo[2]);
+        getSupportActionBar().setTitle(null);
     }
 
     // Creates an asynchronous task that gets the image for the document view
@@ -397,10 +398,10 @@ public class DocumentView extends AppCompatActivity {
         }
     }
 
-    private class GetDocumentMetadata extends AsyncTask<String, String, String>{
+    private class GetDocumentMetadata extends AsyncTask<String, Integer, List<String>>{
 
         @Override
-        protected String doInBackground(String... params) {
+        protected List<String> doInBackground(String... params) {
             try {
                 if (android.os.Debug.isDebuggerConnected()) {
                     android.os.Debug.waitForDebugger();
@@ -408,10 +409,18 @@ public class DocumentView extends AppCompatActivity {
                 String metadataQuery = mQueryManager.constructDocMetadataQuery(params[0]);
                 Log.d(TAG, metadataQuery);
                 InputStream responseStream = mQueryManager.queryDigitalRepositoryAsync(metadataQuery);
-                String response = null;
+
+                // title, origin_place, publisher, date, language, abstract, access_condition
+                List<String> response = null;
                 try {
-                    response = mQueryManager.readStringFromInputStream(responseStream);
-                    Log.d(TAG, response);
+                    // Get response and response as string (for debugging)
+                    //String responseString = mQueryManager.readStringFromInputStream(responseStream);
+                    //Log.d(TAG, responseString);
+                    ResponseJSONParser responseJSONParser = new ResponseJSONParser();
+                    response = responseJSONParser.parseMetadata(responseStream);
+                    for(String s: response) {
+                        Log.d(TAG, s);
+                    }
                 } catch (java.io.IOException e){
                     e.printStackTrace();
                 }
@@ -422,7 +431,14 @@ public class DocumentView extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(String result){
+        protected void onPostExecute(List<String> result){
+
+            if (result != null){
+
+                // title, origin_place, publisher, date, language, abstract, access_condition
+
+
+            }
 
         }
     }

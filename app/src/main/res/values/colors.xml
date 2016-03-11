@@ -3,4 +3,5 @@
     <color name="colorPrimary">#424242</color>
     <color name="colorPrimaryDark">@android:color/black</color>
     <color name="colorAccent">@android:color/holo_orange_dark</color>
+    <color name="docViewNavBarElementColor">#80000000</color>
 </resources>

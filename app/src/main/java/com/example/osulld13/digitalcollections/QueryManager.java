@@ -2,7 +2,9 @@ package com.example.osulld13.digitalcollections;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Message;
 import android.util.Log;
+import android.util.JsonReader;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,6 +12,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
