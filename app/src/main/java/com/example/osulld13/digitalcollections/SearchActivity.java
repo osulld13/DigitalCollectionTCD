@@ -158,7 +158,7 @@ public class SearchActivity extends AppCompatActivity {
         String[] documentIds = new String[documentsRetrieved.size()];
         int i = 0;
         for( Document doc : documentsRetrieved ){
-            documentIds[i] = doc.getText().substring(0, charsInListItemString) + "...";
+            documentIds[i] = doc.getText();//.substring(0, charsInListItemString) + "...";
             i++;
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(

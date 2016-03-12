@@ -15,8 +15,10 @@ public class JSONParsingConstants {
     public static final String publisher = "publisher";
     public static final String dateOther = "dateOther";
     public static final String language = "language";
-    public static final String languageTerm = "laguageTerm";
+    public static final String languageTerm = "languageTerm";
     public static final String abstractVal = "abstract";
     public static final String accessCondition = "accessCondition";
+    public static final String text = "text";
+    public static final String type = "type";
 
 }

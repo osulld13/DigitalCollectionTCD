@@ -26,7 +26,7 @@ public class QueryManager {
     public String constructSolrQuery(String freeQuery){
         String query = "http://library02.tchpc.tcd.ie:8080/solr/dris/select?indent=on&version=2.2&q=subject_lctgm%3A[*%20TO%20*]&fq=" +
                 urlQueryAdapter(freeQuery) +
-                "&start=0&rows=1000&fl=*%2Cscore&qt=standard&wt=standard&explainOther=&hl.fl=";
+                "&start=0&rows=25&fl=*%2Cscore&qt=standard&wt=standard&explainOther=&hl.fl=";
         return query;
     }
 
