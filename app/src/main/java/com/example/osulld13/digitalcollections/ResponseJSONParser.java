@@ -52,30 +52,19 @@ public class ResponseJSONParser {
                         while(reader.hasNext()){
                             name = reader.nextName();
                             if (name.equals(JSONParsingConstants.place)){
-                                reader.beginObject();
-                                while(reader.hasNext()) {
-                                    name = reader.nextName();
-                                    if(name.equals(JSONParsingConstants.placeTerm)){
-                                        reader.beginObject();
-                                        while(reader.hasNext()) {
-                                            name = reader.nextName();
-                                            if (name.equals(JSONParsingConstants.dollar)){
-                                                originPlace = reader.nextString();
-                                            }
-                                            else{
-                                                reader.skipValue();
-                                            }
-                                        }
-                                    }
-                                    else{
-                                        reader.skipValue();
-                                    }
-                                }
+                                originPlace = readPlace(reader, originPlace);
+                            }
+                            else if(name.equals(JSONParsingConstants.publisher)){
+                                publisher = readPublisher(reader, publisher);
+                            }
+                            else if(name.equals(JSONParsingConstants.dateOther)){
+                                date = readDate(reader);
                             }
                             else{
                                 reader.skipValue();
                             }
                         }
+                        reader.endObject();
                     }
                     else{
                         reader.skipValue();
@@ -96,6 +85,55 @@ public class ResponseJSONParser {
         returnList.add(accessCondition);
 
         return returnList;
+    }
+
+    private String readDate(JsonReader reader) throws IOException {
+        String date;
+        if (reader.peek() == JsonToken.BEGIN_ARRAY) {
+            reader.beginArray();
+            date = reader.nextString();
+            while (reader.hasNext()){
+                reader.skipValue();
+            }
+            reader.endArray();
+        }
+        else {
+            date = reader.nextString();
+        }
+        return date;
+    }
+
+    private String readPublisher(JsonReader reader, String publisher) throws IOException {
+        if(reader.peek() != JsonToken.NULL) {
+            publisher = reader.nextString();
+        }
+        return publisher;
+    }
+
+    private String readPlace(JsonReader reader, String originPlace) throws IOException {
+        String name;
+        reader.beginObject();
+        while(reader.hasNext()) {
+            name = reader.nextName();
+            if(name.equals(JSONParsingConstants.placeTerm)){
+                reader.beginObject();
+                while(reader.hasNext()) {
+                    name = reader.nextName();
+                    if (name.equals(JSONParsingConstants.dollar)){
+                        originPlace = reader.nextString();
+                    }
+                    else{
+                        reader.skipValue();
+                    }
+                }
+                reader.endObject();
+            }
+            else{
+                reader.skipValue();
+            }
+        }
+        reader.endObject();
+        return originPlace;
     }
 
     private String readTitleInfo(JsonReader reader, String title) throws IOException {
