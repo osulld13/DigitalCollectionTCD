@@ -156,7 +156,7 @@ public class SearchActivity extends AppCompatActivity {
     private void setListToRetrievedDocuments(List<Document> documentsRetrieved) {
         this.documentsRetrieved = documentsRetrieved;
         String[] documentIds = new String[documentsRetrieved.size()];
-        int i = 0;
+        /*int i = 0;
         for( Document doc : documentsRetrieved ){
             documentIds[i] = doc.getText();//.substring(0, charsInListItemString) + "...";
             i++;
@@ -165,8 +165,8 @@ public class SearchActivity extends AppCompatActivity {
                 SearchActivity.this,
                 android.R.layout.simple_list_item_1,
                 documentIds
-        );
-
+        );*/
+        SearchResultsAdapter adapter = new SearchResultsAdapter(this, documentsRetrieved);
         mListView.setAdapter(adapter);
     }
 
