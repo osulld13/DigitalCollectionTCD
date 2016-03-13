@@ -31,10 +31,10 @@ import uk.co.senab.photoview.PhotoViewAttacher;
 
 public class DocumentView extends AppCompatActivity {
 
-    private final String TAG = QueryManager.class.getSimpleName();
+    private final String TAG = DocumentView.class.getSimpleName();
     private String[] docInfo; // Pid, DrisFolderNumber, Text, Genre, Lang, TypeOfResource
     ArrayList<String> docPageIds;
-    ArrayList<CharSequence> documentMetadata;
+    ArrayList<CharSequence> documentMetadata; // title, origin_place, publisher, date, language, abstract, access_condition
     private PhotoViewAttacher mAttacher;
     private ImageView mImageView;
     private QueryManager mQueryManager = new QueryManager();
@@ -414,6 +414,9 @@ public class DocumentView extends AppCompatActivity {
                     ResponseJSONParser responseJSONParser = new ResponseJSONParser();
                     response = responseJSONParser.parseMetadata(responseStream);
                     documentMetadata = response;
+                    //Add Pid to documentMetadata it will be later transfered to the detail view activity
+                    documentMetadata.add(docInfo[0]);
+
                     /*
                     for(String s: response) {
                         Log.d(TAG, s);

@@ -50,47 +50,11 @@ public class SearchResultsAdapter extends ArrayAdapter<Document> {
         mSubText.setText(capitalize(document.getGenre()));
 
         GetThumbnailImage getThumbnailImage = new GetThumbnailImage();
-        getThumbnailImage.updateInfoSyncTask(document.getPid(), mImageView);
+        getThumbnailImage.updateInfoSyncTask(document.getPid(), mImageView, mQueryManager, 0); // get small thumbnail
         getThumbnailImage.execute();
 
         // Return the completed view to render on screen
         return convertView;
-    }
-
-    // Creates an asynchronous task that gets the image for the document view
-    private class GetThumbnailImage extends AsyncTask<Void, Void, Bitmap> {
-
-        private String pId;
-        private ImageView imageView;
-
-        public void updateInfoSyncTask(String pId, ImageView imageView){
-            this.pId = pId;
-            this.imageView = imageView;
-        }
-
-        protected Bitmap doInBackground(Void... params){
-            try {
-                if (android.os.Debug.isDebuggerConnected()) {
-                    android.os.Debug.waitForDebugger();
-                }
-                return mQueryManager.getImageThumbnailResource(pId);
-            } catch(java.lang.RuntimeException e){
-                return null;
-            }
-        }
-
-        protected void onPostExecute (Bitmap result) {
-            //Turn Progress indicator off
-            if(android.os.Debug.isDebuggerConnected()){
-                android.os.Debug.waitForDebugger();
-            }
-
-            // If result has been retrieved
-            if (result != null) {
-                this.imageView.setImageBitmap(result);
-            }
-
-        }
     }
 
     @Override

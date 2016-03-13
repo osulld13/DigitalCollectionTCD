@@ -2,6 +2,7 @@ package com.example.osulld13.digitalcollections;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -65,8 +66,19 @@ public class QueryManager {
         return bmp;
     }
 
-    public Bitmap getImageThumbnailResource(String pid){
-        URL url = getResourceThumbnailURL(pid);
+    public Bitmap getImageThumbnailResource(String pid, int size){
+
+        URL url;
+
+        // determine whether to get the larger of smaller thumbnail
+        if (size == 0) {
+            url = getResourceThumbnailURL(pid);
+        }
+        else {
+            url = getResourceThumbnailLargerURL(pid);
+        }
+
+        Log.d(TAG, url.toString());
         Bitmap bmp = null;
         try {
             // Make sure image complies with memory limits
@@ -154,6 +166,18 @@ public class QueryManager {
     private URL getResourceThumbnailURL(String pid){
         //String urlString =  "http://digitalcollections.tcd.ie/covers_220/"+pid+"_LO.jpg";
         String urlString =  "http://digitalcollections.tcd.ie/covers_thumbs/"+pid+"_LO.jpg";
+        URL url = null;
+        try {
+            url =  new URL(urlString);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        //Log.d(TAG, url.toString());
+        return url;
+    }
+
+    private URL getResourceThumbnailLargerURL(String pid){
+        String urlString =  "http://digitalcollections.tcd.ie/covers_220/"+pid+"_LO.jpg";
         URL url = null;
         try {
             url =  new URL(urlString);

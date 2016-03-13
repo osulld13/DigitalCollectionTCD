@@ -50,13 +50,29 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:text="@string/detail_view_title_label"
                 android:textColor="@android:color/darker_gray"
-                android:id="@+id/detailViewTitleTextView"
+                android:id="@+id/detailViewTitleTextViewLabel"
                 android:layout_alignParentTop="true"
                 android:layout_toRightOf="@+id/detailViewImageContainer"
                 android:layout_toEndOf="@+id/detailViewImageContainer"
                 android:layout_marginTop="30dp"/>
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:text=""
+                android:id="@+id/detailViewTitleTextView"
+                android:textColor="@android:color/black"
+                android:maxLines="4"
+                android:ellipsize="end"
+                android:layout_below="@+id/detailViewTitleTextViewLabel"
+                android:layout_toRightOf="@+id/detailViewImageContainer"
+                android:layout_toEndOf="@+id/detailViewImageContainer" />
+
         </RelativeLayout>
+
+
+
     </RelativeLayout>
 
 </RelativeLayout>

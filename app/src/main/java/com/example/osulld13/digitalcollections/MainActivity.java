@@ -74,8 +74,6 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             case R.id.action_bookmarks:
                 return true;
-            case R.id.action_settings:
-                return true;
         }
 
         return super.onOptionsItemSelected(item);
