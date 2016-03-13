@@ -15,6 +15,12 @@
     <string name="ok">OK</string>
     <string name="title_activity_document_swipe_view">DocumentSwipeView</string>
     <string name="action_detail_view_label">Details</string>
-    <string name="detail_view_title_label">Title:</string>
     <string name="title_activity_document_detail_view">DocumentDetailViewActivity</string>
+    <string name="detail_view_title_label">Title:</string>
+    <string name="detail_view_origin_label">Place of Origin:</string>
+    <string name="detail_view_publisher_label">Publisher:</string>
+    <string name="detail_view_date_label">Date:</string>
+    <string name="detail_view_language_label">Language:</string>
+    <string name="detail_view_abstract_label">Abstract:</string>
+    <string name="detail_view_access_condition_label">Access Condition:</string>
 </resources>
