@@ -67,43 +67,13 @@ public class ResponseJSONParser {
                         reader.endObject();
                     }
                     else if (name.equals(JSONParsingConstants.language)){
-                        reader.beginObject();
-                        while(reader.hasNext()){
-                            name = reader.nextName();
-                            if(name.equals(JSONParsingConstants.languageTerm)){
-                                if(reader.peek().equals(JsonToken.BEGIN_ARRAY)){
-                                    reader.beginArray();
-                                    while (reader.hasNext()){
-                                        reader.beginObject();
-                                        while(reader.hasNext()){
-                                            name = reader.nextName();
-                                            if (name.equals(JSONParsingConstants.type)) {
-                                                if (reader.nextString().equals(JSONParsingConstants.text)) {
-                                                    while(reader.hasNext()){
-                                                        name = reader.nextName();
-                                                        if (name.equals(JSONParsingConstants.dollar)){
-                                                            language = reader.nextString();
-                                                        }
-                                                        else {
-                                                            reader.skipValue();
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            else {
-                                                reader.skipValue();
-                                            }
-                                        }
-                                        reader.endObject();
-                                    }
-                                    reader.endArray();
-                                }
-                            }
-                            else{
-                                reader.skipValue();
-                            }
-                        }
-                        reader.endObject();
+                        language = readLanguage(reader, language);
+                    }
+                    else if (name.equals(JSONParsingConstants.abstractVal)){
+                        docAbstract = readAbstract(reader, docAbstract);
+                    }
+                    else if (name.equals(JSONParsingConstants.accessCondition)){
+                        accessCondition = readAccessCondition(reader, accessCondition);
                     }
                     else{
                         reader.skipValue();
@@ -124,6 +94,93 @@ public class ResponseJSONParser {
         returnList.add(accessCondition);
 
         return returnList;
+    }
+
+    private String readAccessCondition(JsonReader reader, String accessCondition) throws IOException {
+        String name;
+        reader.beginObject();
+        while(reader.hasNext()){
+            name = reader.nextName();
+            if(name.equals(JSONParsingConstants.dollar)){
+                accessCondition = reader.nextString();
+            }
+            else{
+                reader.skipValue();
+            }
+        }
+        reader.endObject();
+        return accessCondition;
+    }
+
+    private String readAbstract(JsonReader reader, String docAbstract) throws IOException {
+        String name;
+        reader.beginObject();
+        while (reader.hasNext()){
+            name = reader.nextName();
+            if(name.equals(JSONParsingConstants.dollar)){
+                docAbstract = reader.nextString();
+            }
+            else{
+                reader.skipValue();
+            }
+        }
+        reader.endObject();
+        return docAbstract;
+    }
+
+    private String readLanguage(JsonReader reader, String language) throws IOException {
+        String name;
+
+        if (reader.peek() == JsonToken.BEGIN_ARRAY){
+            reader.beginArray();
+            while(reader.hasNext()){
+                if (language.equals("")) {
+                    language += readLanguage(reader, language);
+                }
+                else {
+                    language += ", " + readLanguage(reader, language);
+                }
+            }
+            reader.endArray();
+        }
+
+        else {
+            reader.beginObject();
+            while (reader.hasNext()) {
+                name = reader.nextName();
+                if (name.equals(JSONParsingConstants.languageTerm)) {
+                    if (reader.peek().equals(JsonToken.BEGIN_ARRAY)) {
+                        reader.beginArray();
+                        while (reader.hasNext()) {
+                            reader.beginObject();
+                            while (reader.hasNext()) {
+                                name = reader.nextName();
+                                if (name.equals(JSONParsingConstants.type)) {
+                                    if (reader.nextString().equals(JSONParsingConstants.text)) {
+                                        while (reader.hasNext()) {
+                                            name = reader.nextName();
+                                            if (name.equals(JSONParsingConstants.dollar)) {
+                                                language = reader.nextString();
+                                            } else {
+                                                reader.skipValue();
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    reader.skipValue();
+                                }
+                            }
+                            reader.endObject();
+                        }
+                        reader.endArray();
+                    }
+                } else {
+                    reader.skipValue();
+                }
+            }
+            reader.endObject();
+        }
+        return language;
     }
 
     private String readDate(JsonReader reader) throws IOException {

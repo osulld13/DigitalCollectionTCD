@@ -26,7 +26,7 @@ public class QueryManager {
     public String constructSolrQuery(String freeQuery){
         String query = "http://library02.tchpc.tcd.ie:8080/solr/dris/select?indent=on&version=2.2&q=subject_lctgm%3A[*%20TO%20*]&fq=" +
                 urlQueryAdapter(freeQuery) +
-                "&start=0&rows=20&fl=*%2Cscore&qt=standard&wt=standard&explainOther=&hl.fl=";
+                "&start=0&rows=15&fl=*%2Cscore&qt=standard&wt=standard&explainOther=&hl.fl=";
         return query;
     }
 
@@ -153,7 +153,8 @@ public class QueryManager {
     }
 
     private URL getResourceThumbnailURL(String pid){
-        String urlString =  "http://digitalcollections.tcd.ie/covers_220/"+pid+"_LO.jpg";
+        //String urlString =  "http://digitalcollections.tcd.ie/covers_220/"+pid+"_LO.jpg";
+        String urlString =  "http://digitalcollections.tcd.ie/covers_thumbs/"+pid+"_LO.jpg";
         URL url = null;
         try {
             url =  new URL(urlString);

@@ -414,13 +414,13 @@ public class DocumentView extends AppCompatActivity {
                 List<String> response = null;
                 try {
                     // Get response and response as string (for debugging)
-                    //String responseString = mQueryManager.readStringFromInputStream(responseStream);
-                    //Log.d(TAG, responseString);
                     ResponseJSONParser responseJSONParser = new ResponseJSONParser();
                     response = responseJSONParser.parseMetadata(responseStream);
+                    /*
                     for(String s: response) {
                         Log.d(TAG, s);
                     }
+                    */
                 } catch (java.io.IOException e){
                     e.printStackTrace();
                 }
