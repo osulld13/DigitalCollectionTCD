@@ -19,6 +19,8 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +39,7 @@ public class DocumentView extends AppCompatActivity {
     private ProgressBar mProgressBar;
     private AlertDialog.Builder builder;
     private TextView mTextView;
+    private TextView mTitleTextView;
     private Button mPrevButton;
     private Button mNextButton;
     private SeekBar mSeekbar;
@@ -67,6 +70,7 @@ public class DocumentView extends AppCompatActivity {
         //Get text view
         mTextView = (TextView) findViewById(R.id.docViewTextView);
         mSeekBarTextView = (TextView) findViewById((R.id.seekBarTextView));
+        mTitleTextView = (TextView) findViewById(R.id.docViewTitleTextView);
 
         initializeDocImage();
 
@@ -108,6 +112,7 @@ public class DocumentView extends AppCompatActivity {
                 mTextView.setVisibility(View.INVISIBLE);
                 mSeekbar.setVisibility(View.INVISIBLE);
                 mSeekBarTextView.setVisibility(View.INVISIBLE);
+                mTitleTextView.setVisibility(View.INVISIBLE);
                 navBarVisible = false;
             } else {
                 mNextButton.setVisibility(View.VISIBLE);
@@ -115,6 +120,7 @@ public class DocumentView extends AppCompatActivity {
                 mTextView.setVisibility(View.VISIBLE);
                 mSeekbar.setVisibility(View.VISIBLE);
                 mSeekBarTextView.setVisibility(View.VISIBLE);
+                mTitleTextView.setVisibility(View.VISIBLE);
                 navBarVisible = true;
             }
         }
@@ -436,7 +442,7 @@ public class DocumentView extends AppCompatActivity {
             if (result != null){
 
                 // title, origin_place, publisher, date, language, abstract, access_condition
-
+                mTitleTextView.setText(result.get(0));
 
             }
 
