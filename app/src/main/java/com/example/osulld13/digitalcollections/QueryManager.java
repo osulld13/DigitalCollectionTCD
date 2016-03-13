@@ -66,6 +66,32 @@ public class QueryManager {
         return bmp;
     }
 
+    public Bitmap getImageThumbnailResource(String pid){
+        URL url = getResourceThumbnailURL(pid);
+        Bitmap bmp = null;
+        try {
+            // Make sure image complies with memory limits
+
+            // Load in info
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inJustDecodeBounds = true;
+            BitmapFactory.decodeStream(url.openConnection().getInputStream(), null, options);
+
+            // Calculate whether to load in resampled image
+            options.inSampleSize = calculateThumbnailSampleSize(options,
+                    AppConstants.thumbnailImageWidth,
+                    AppConstants.thumbnailImageHeight);
+
+            //Load in resampled image
+            options.inJustDecodeBounds = false;
+            bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream(), null, options);
+
+        } catch (java.io.IOException e){
+            e.printStackTrace();
+        }
+        return bmp;
+    }
+
     // Code got from http://developer.android.com/training/displaying-bitmaps/load-bitmap.html#load-bitmap
     public static int calculateInSampleSize(
             BitmapFactory.Options options, int reqWidth, int reqHeight) {
@@ -90,8 +116,44 @@ public class QueryManager {
         return inSampleSize;
     }
 
+    // Code got from http://developer.android.com/training/displaying-bitmaps/load-bitmap.html#load-bitmap
+    public static int calculateThumbnailSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) > reqHeight
+                    && (halfWidth / inSampleSize) > reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
+    }
+
     private URL getImageResourceURL(String drisFolderNum, String pid){
         String urlString =  "http://digitalcollections.tcd.ie/content/"+drisFolderNum+"/jpeg/"+pid+"_LO.jpg";
+        URL url = null;
+        try {
+            url =  new URL(urlString);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        Log.d(TAG, url.toString());
+        return url;
+    }
+
+    private URL getResourceThumbnailURL(String pid){
+        String urlString =  "http://digitalcollections.tcd.ie/covers_220/"+pid+"_LO.jpg";
         URL url = null;
         try {
             url =  new URL(urlString);
