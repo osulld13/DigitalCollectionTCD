@@ -14,4 +14,7 @@
     <string name="network_error_title">Network Error</string>
     <string name="ok">OK</string>
     <string name="title_activity_document_swipe_view">DocumentSwipeView</string>
+    <string name="action_detail_view_label">Details</string>
+    <string name="detail_view_title_label">Title:</string>
+    <string name="title_activity_document_detail_view">DocumentDetailViewActivity</string>
 </resources>

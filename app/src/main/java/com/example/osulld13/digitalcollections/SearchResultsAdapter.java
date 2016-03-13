@@ -1,21 +1,15 @@
 package com.example.osulld13.digitalcollections;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
-import android.media.Image;
 import android.os.AsyncTask;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 /**

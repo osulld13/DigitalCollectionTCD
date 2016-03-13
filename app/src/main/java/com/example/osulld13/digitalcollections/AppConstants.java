@@ -12,4 +12,5 @@ public class AppConstants {
     public static final int thumbnailImageHeight = 100;
     public static final String listOfObjectsInDocumentDelimeter = "info:fedora/dris:";
     public static final String navigationButtonHighlightColor = "#80FFFFFF";
+    public static final String documentDetailTransferString = "documentDetail";
 }

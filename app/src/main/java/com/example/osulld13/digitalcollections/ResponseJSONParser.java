@@ -7,14 +7,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Donal on 11/03/2016.
  */
 public class ResponseJSONParser {
 
-    public List parseMetadata(InputStream in) throws IOException {
+    public ArrayList parseMetadata(InputStream in) throws IOException {
         JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
         try {
             return readMessage(reader);
@@ -23,7 +22,7 @@ public class ResponseJSONParser {
         }
     }
 
-    public List<String> readMessage(JsonReader reader) throws IOException {
+    public ArrayList<String> readMessage(JsonReader reader) throws IOException {
         // title, origin_place, publisher, date, language, abstract, access_condition
         String title = "";
         String originPlace = "";
@@ -33,7 +32,7 @@ public class ResponseJSONParser {
         String docAbstract = "";
         String accessCondition = "";
 
-        List<String> returnList = new ArrayList<String>();
+        ArrayList<String> returnList = new ArrayList<String>();
 
         // Get values for items
 

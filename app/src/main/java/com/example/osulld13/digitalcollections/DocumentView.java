@@ -10,6 +10,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -33,6 +34,7 @@ public class DocumentView extends AppCompatActivity {
     private final String TAG = QueryManager.class.getSimpleName();
     private String[] docInfo; // Pid, DrisFolderNumber, Text, Genre, Lang, TypeOfResource
     ArrayList<String> docPageIds;
+    ArrayList<CharSequence> documentMetadata;
     private PhotoViewAttacher mAttacher;
     private ImageView mImageView;
     private QueryManager mQueryManager = new QueryManager();
@@ -201,7 +203,7 @@ public class DocumentView extends AppCompatActivity {
 
     private void goToPageWithIndex(int index) {
         String newPid = docPageIds.get(index);
-        Log.d(TAG, "New page number is " + String.valueOf(newPid));
+        //Log.d(TAG, "New page number is " + String.valueOf(newPid));
 
         // Copy docInfo string array and change pid to new pid. Now this can be passed to the new docView
         String[] newDocInfo = docInfo;
@@ -241,7 +243,7 @@ public class DocumentView extends AppCompatActivity {
 
         if (changePage) {
 
-            Log.d(TAG, "New page number is " + String.valueOf(newPid));
+            //Log.d(TAG, "New page number is " + String.valueOf(newPid));
 
             // Copy docInfo string array and change pid to new pid. Now this can be passed to the new docView
             String[] newDocInfo = docInfo;
@@ -255,17 +257,6 @@ public class DocumentView extends AppCompatActivity {
 
         }
 
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            // Respond to the action bar's Up/Home button
-            case android.R.id.home:
-                finish();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     private void setUpToolbar() {
@@ -337,7 +328,7 @@ public class DocumentView extends AppCompatActivity {
                     android.os.Debug.waitForDebugger();
                 }
                 String listQuery = mQueryManager.constructListOfObjectsInCollectionQuery(info[0]);
-                Log.d(TAG, listQuery);
+                //Log.d(TAG, listQuery);
                 InputStream responseStream = mQueryManager.queryDigitalRepositoryAsync(listQuery);
                 String response = null;
                 try {
@@ -367,7 +358,7 @@ public class DocumentView extends AppCompatActivity {
 
             // If result has been retrieved
             if (result != null) {
-                Log.d(TAG, result);
+                //Log.d(TAG, result);
                 String [] data = result.split(AppConstants.listOfObjectsInDocumentDelimeter);
 
                 ArrayList<String> resultData = new ArrayList<String>(Arrays.asList(data));
@@ -381,7 +372,7 @@ public class DocumentView extends AppCompatActivity {
                     }
                 }
 
-                Log.d(TAG, "Current page index: " + String.valueOf(currentPageIndex));
+                //Log.d(TAG, "Current page index: " + String.valueOf(currentPageIndex));
                 mTextView.setText("Page " + String.valueOf(currentPageIndex + 1) + " of " + String.valueOf(docPageIds.size()));
 
                 setUpNavigationButtons();
@@ -404,24 +395,25 @@ public class DocumentView extends AppCompatActivity {
         }
     }
 
-    private class GetDocumentMetadata extends AsyncTask<String, Integer, List<String>>{
+    private class GetDocumentMetadata extends AsyncTask<String, Integer, ArrayList<CharSequence>>{
 
         @Override
-        protected List<String> doInBackground(String... params) {
+        protected ArrayList<CharSequence> doInBackground(String... params) {
             try {
                 if (android.os.Debug.isDebuggerConnected()) {
                     android.os.Debug.waitForDebugger();
                 }
                 String metadataQuery = mQueryManager.constructDocMetadataQuery(params[0]);
-                Log.d(TAG, metadataQuery);
+                //Log.d(TAG, metadataQuery);
                 InputStream responseStream = mQueryManager.queryDigitalRepositoryAsync(metadataQuery);
 
                 // title, origin_place, publisher, date, language, abstract, access_condition
-                List<String> response = null;
+                ArrayList<CharSequence> response = null;
                 try {
                     // Get response and response as string (for debugging)
                     ResponseJSONParser responseJSONParser = new ResponseJSONParser();
                     response = responseJSONParser.parseMetadata(responseStream);
+                    documentMetadata = response;
                     /*
                     for(String s: response) {
                         Log.d(TAG, s);
@@ -437,7 +429,7 @@ public class DocumentView extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(List<String> result){
+        protected void onPostExecute(ArrayList<CharSequence> result){
 
             if (result != null){
 
@@ -446,6 +438,37 @@ public class DocumentView extends AppCompatActivity {
 
             }
 
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_document_view, menu);
+        return true;
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                finish();
+                return true;
+            case R.id.action_detail_view:
+                startDetailViewActivity();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void startDetailViewActivity(){
+        if(documentMetadata != null) {
+            // go to to detail activity
+            Intent documentDetailViewIntent = new Intent(this, DocumentDetailViewActivity.class);
+            documentDetailViewIntent.putCharSequenceArrayListExtra(AppConstants.documentDetailTransferString, documentMetadata);
+            startActivity(documentDetailViewIntent);
         }
     }
 

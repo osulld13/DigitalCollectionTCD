@@ -31,6 +31,7 @@
             android:name=".SearchActivity"
             android:label="@string/title_activity_search"
             android:parentActivityName=".MainActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -43,9 +44,14 @@
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
         <activity
-            android:name=".DocumentSwipeView"
-            android:label="@string/title_activity_document_swipe_view"
+            android:name=".DocumentDetailViewActivity"
+            android:label="@string/title_activity_document_detail_view"
+            android:parentActivityName=".DocumentView"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.osulld13.digitalcollections.DocumentView" />
         </activity>
     </application>
 

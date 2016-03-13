@@ -2,7 +2,6 @@ package com.example.osulld13.digitalcollections;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -148,7 +147,7 @@ public class QueryManager {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        Log.d(TAG, url.toString());
+        //Log.d(TAG, url.toString());
         return url;
     }
 
@@ -161,7 +160,7 @@ public class QueryManager {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        Log.d(TAG, url.toString());
+        //Log.d(TAG, url.toString());
         return url;
     }
 
