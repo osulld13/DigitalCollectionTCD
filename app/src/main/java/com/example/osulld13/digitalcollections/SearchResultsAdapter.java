@@ -52,8 +52,8 @@ public class SearchResultsAdapter extends ArrayAdapter<Document> {
         ImageView mImageView = (ImageView) convertView.findViewById(R.id.searchResultImageView);
 
         // Populate the data into the template view using the data object
-        mTitle.setText(document.getText());
-        mSubText.setText(document.getGenre());
+        mTitle.setText(capitalize(document.getText()));
+        mSubText.setText(capitalize(document.getGenre()));
 
         GetThumbnailImage getThumbnailImage = new GetThumbnailImage();
         getThumbnailImage.updateInfoSyncTask(document.getPid(), mImageView);
@@ -109,5 +109,10 @@ public class SearchResultsAdapter extends ArrayAdapter<Document> {
     public int getItemViewType(int position) {
         return position;
     }
+
+    private String capitalize(String line) {
+        return Character.toUpperCase(line.charAt(0)) + line.substring(1);
+    }
+
 
 }
