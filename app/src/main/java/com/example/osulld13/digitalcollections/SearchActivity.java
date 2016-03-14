@@ -35,47 +35,50 @@ public class SearchActivity extends AppCompatActivity {
     private ResponseXMLParser responseXMLParser;
     private ListView mListView;
     private AlertDialog.Builder builder;
-    private int currentResultsPage = 0;
-    private int resultsPerPage = 15;
-    private String lastQuery = "";
-
     private ProgressBar mProgressBar;
+
+    private int currentQueryId = 0;
+    private int currentResultsPage = 0;
+    private int resultsPerPage = AppConstants.resultsPerSearchPage;
+    private int searchResultsPaginateDistance = AppConstants.searchResultsPaginateDistance;
+    private String lastQuery = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-
+        // Set up toolbar
         setUpToolbar();
-
         //Add alert dialogue builder
         builder = new AlertDialog.Builder(SearchActivity.this);
-
         // Add progress bar to XML views and then call to make visible
         mProgressBar = (ProgressBar) findViewById(R.id.searchProgressBar);
         mProgressBar.setVisibility(View.INVISIBLE);
-
         // Get search bar and set listener for searching
         mSearchBar = (SearchView) findViewById(R.id.searchView);
         mSearchBar.onActionViewExpanded();
-
         // Initialize Query constructor
         queryManager = new QueryManager();
-
         // Initialize response XML parser
         responseXMLParser = new ResponseXMLParser();
-
+        //InitializeListView
         initListView();
-
-
+        // add query listener for search bar
         mSearchBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                if (adapter != null){
+                    adapter.clear();
+                    adapter.notifyDataSetChanged();
+                }
                 // Turn Progress Indicator on
+                currentQueryId += 1;
                 currentResultsPage = 0;
                 lastQuery = query;
-                new GetSearchResults().execute(query);
+                GetSearchResults getSearchResults = new GetSearchResults();
+                getSearchResults.updateGetSearchResults(false, currentQueryId, currentResultsPage);
+                getSearchResults.execute(query);
                 return false;
             }
 
@@ -85,22 +88,21 @@ public class SearchActivity extends AppCompatActivity {
                 return false;
             }
         });
-
     }
 
     private void initListView() {
-        // Get ListView and set its onItemClicked Listener
+        // Get ListView and
         mListView = (ListView) findViewById(R.id.searchListView);
-
-
+        // set its onItemClicked Listener
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 goToDocumentView(position);
             }
         });
+        // set the scroll listener
+        mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
-        /*mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             int firstVisibleItem;
             int visibleItemCount;
             int totalItemCount;
@@ -109,14 +111,14 @@ public class SearchActivity extends AppCompatActivity {
             public void onScrollStateChanged(AbsListView view, int scrollState) {
                 // if the end of the scrollbar is reached
                 if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE &&
-                        (firstVisibleItem + visibleItemCount) == ((currentResultsPage + 1) * resultsPerPage )){
+                        (firstVisibleItem + visibleItemCount) >= (((currentResultsPage + 1) * resultsPerPage)) - searchResultsPaginateDistance) {
                     currentResultsPage += 1;
-                    mProgressBar.setVisibility(View.VISIBLE);
                     Log.d(TAG, "Time to load new results!");
                     Log.d(TAG, lastQuery);
-                    //getNewResults
-                    //new GetSearchResults().execute(lastQuery);
-                    //appendThemToTheListView
+                    Log.d(TAG, String.valueOf(currentQueryId));
+                    GetSearchResults getSearchResults = new GetSearchResults();
+                    getSearchResults.updateGetSearchResults(true, currentQueryId, currentResultsPage);
+                    getSearchResults.execute(lastQuery);
                 }
             }
 
@@ -126,30 +128,32 @@ public class SearchActivity extends AppCompatActivity {
                 this.visibleItemCount = visibleItemCount;
                 this.totalItemCount = totalItemCount;
             }
-
-        });*/
+        });
     }
 
     // Creates an asynchronous task that gets the queries fedora for the results to the search
     private class GetSearchResults extends AsyncTask<String, Integer, List<Document>>{
 
+        // Append to list and query Id will be used if a paging request is being made
         boolean appendToList = false;
+        int queryId;
+        int resultsPage;
 
-        public void updateGetSearchResults(boolean appendToList){
+        public void updateGetSearchResults(boolean appendToList, int queryId, int resultsPage){
             this.appendToList = appendToList;
+            this.queryId = queryId;
+            this.resultsPage = resultsPage;
         }
 
         protected List<Document> doInBackground(String... queries){
             try {
-
+                if (android.os.Debug.isDebuggerConnected()) {
+                    android.os.Debug.waitForDebugger();
+                }
                 String query = queries[0];
-
-                String solrQuery = queryManager.constructSolrQuery(query, currentResultsPage, resultsPerPage);
-
+                String solrQuery = queryManager.constructSolrQuery(query, this.resultsPage, resultsPerPage);
                 InputStream responseStream = queryManager.queryDigitalRepositoryAsync((String) solrQuery);
-
                 List<Document> documentList = null;
-
                 try {
                     documentList = responseXMLParser.parseSearchResponse(responseStream);
                 } catch (java.io.IOException e){
@@ -159,17 +163,11 @@ public class SearchActivity extends AppCompatActivity {
                     // Add error dialogue
                     e.printStackTrace();
                 }
-
                 // Assign the retrieved documents to the documentsRetrieved List
                 return documentList;
-
             } catch (java.lang.RuntimeException e){
                 return null;
             }
-        }
-
-        protected void onProgressUpdate(Integer... progress) {
-
         }
 
         protected void onPreExecute() {
@@ -181,9 +179,8 @@ public class SearchActivity extends AppCompatActivity {
             // if result retrieved
             if (result != null) {
                 //Turn Progress indicator off
-                setListToRetrievedDocuments(result);
+                setListToRetrievedDocuments(result, this.appendToList, this.queryId);
             }
-
             // if no result retrieved
             else {
                 builder.setMessage(R.string.network_error_message)
@@ -196,26 +193,29 @@ public class SearchActivity extends AppCompatActivity {
                 final AlertDialog networkErrorDialog = builder.create();
                 networkErrorDialog.show();
             }
-
             mProgressBar.setVisibility(View.INVISIBLE);
         }
     }
 
 
-    private void setListToRetrievedDocuments(List<Document> documentsRetrieved) {
-        this.documentsRetrieved = documentsRetrieved;
+    private void setListToRetrievedDocuments(List<Document> documentsRetrieved, boolean appendToList, int queryId) {
+        // if this is the first search
         if (documentsRetrieved.size() == 0 && adapter != null){
             adapter.clear();
             adapter.notifyDataSetChanged();
         }
+        // If this is a call to append to the list and the queryId is the same as when we sent the request, we append the
+        // data to the list
+        else if(appendToList == true && queryId == currentQueryId){
+            //Log.d(TAG, "Will append to the list");
+            this.documentsRetrieved.addAll(documentsRetrieved);
+            adapter.notifyDataSetChanged();
+        }
         else if(documentsRetrieved.size() != 0) {
-
+            this.documentsRetrieved = documentsRetrieved;
             String[] documentIds = new String[documentsRetrieved.size()];
             adapter = new SearchResultsAdapter(this, documentsRetrieved);
             mListView.setAdapter(adapter);
-        }
-        else{
-            mListView.setEmptyView(findViewById(android.R.id.empty));
         }
     }
 

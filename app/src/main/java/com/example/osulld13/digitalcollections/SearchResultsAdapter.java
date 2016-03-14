@@ -2,7 +2,7 @@ package com.example.osulld13.digitalcollections;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.os.AsyncTask;
+import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,43 +34,34 @@ public class SearchResultsAdapter extends ArrayAdapter<Document> {
     public View getView(int position, View convertView, ViewGroup parent){
         // Get data for this position
         Document document = getItem(position);
-
         // Check if an existing view is being reused, otherwise inflate the view
         if(convertView == null){
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_search_result, parent, false);
         }
-
+        //assign imageView early to prevent scrolling effect
+        ImageView mImageView = (ImageView) convertView.findViewById(R.id.searchResultImageView);
+        mImageView.setImageResource(R.drawable.background_place_holder_image_dark);
+        mImageView.setImageBitmap(BitmapFactory.decodeResource(getContext().getResources(), R.drawable.background_place_holder_image_light));
+        //Unique tag is added to each image to be checked again when adding the image in the thumbnail request
+        mImageView.setTag(String.valueOf(position));
         // Lookup view for data population
         TextView mTitle = (TextView) convertView.findViewById(R.id.searchResultTitleTextView);
         TextView mSubText = (TextView) convertView.findViewById(R.id.searchResultSubTextView);
-        ImageView mImageView = (ImageView) convertView.findViewById(R.id.searchResultImageView);
-
         // Populate the data into the template view using the data object
         mTitle.setText(capitalize(document.getText()));
         mSubText.setText(capitalize(document.getGenre()));
-
+        // Get thumbnail image from url
         GetThumbnailImage getThumbnailImage = new GetThumbnailImage();
-        getThumbnailImage.updateInfoSyncTask(document.getPid(), mImageView, mQueryManager, 0); // get small thumbnail
+        getThumbnailImage.updateInfoSyncTask(document.getPid(), mImageView, mQueryManager, 0, (String) mImageView.getTag()); // get small thumbnail
         getThumbnailImage.execute();
-
         // Return the completed view to render on screen
         return convertView;
-    }
-
-    @Override
-
-    public int getViewTypeCount() {
-        return getCount();
-    }
-
-    @Override
-    public int getItemViewType(int position) {
-        return position;
     }
 
     private String capitalize(String line) {
         return Character.toUpperCase(line.charAt(0)) + line.substring(1);
     }
+
 
 
 }

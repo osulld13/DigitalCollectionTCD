@@ -61,7 +61,7 @@ public class DocumentDetailViewActivity extends AppCompatActivity {
         // Assign the Image view
         mImageView = (ImageView) findViewById(R.id.detailViewImageView);
         GetThumbnailImage getThumbnailImage = new GetThumbnailImage();
-        getThumbnailImage.updateInfoSyncTask(documentDetails.get(7), mImageView, new QueryManager(), 1); // get larger thumbnail
+        getThumbnailImage.updateInfoSyncTask(documentDetails.get(7), mImageView, new QueryManager(), 1, null); // get larger thumbnail
         getThumbnailImage.execute();
 
         // Assign the Title Views
