@@ -1,5 +1,6 @@
 package com.example.osulld13.digitalcollections;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -7,12 +8,15 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -22,16 +26,18 @@ import java.util.List;
 
 public class SearchActivity extends AppCompatActivity {
 
-    private final String TAG = QueryManager.class.getSimpleName();
+    private final String TAG = SearchActivity.class.getSimpleName();
 
     private SearchView mSearchBar;
     private List<Document> documentsRetrieved;
+    private SearchResultsAdapter adapter;
     private QueryManager queryManager;
     private ResponseXMLParser responseXMLParser;
     private ListView mListView;
     private AlertDialog.Builder builder;
-
-    private final int charsInListItemString = 35;
+    private int currentResultsPage = 0;
+    private int resultsPerPage = 15;
+    private String lastQuery = "";
 
     private ProgressBar mProgressBar;
 
@@ -60,19 +66,15 @@ public class SearchActivity extends AppCompatActivity {
         // Initialize response XML parser
         responseXMLParser = new ResponseXMLParser();
 
-        // Get ListView and set its onItemClicked Listener
-        mListView = (ListView) findViewById(R.id.searchListView);
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                goToDocumentView(position);
-            }
-        });
+        initListView();
+
 
         mSearchBar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 // Turn Progress Indicator on
+                currentResultsPage = 0;
+                lastQuery = query;
                 new GetSearchResults().execute(query);
                 return false;
             }
@@ -86,15 +88,63 @@ public class SearchActivity extends AppCompatActivity {
 
     }
 
+    private void initListView() {
+        // Get ListView and set its onItemClicked Listener
+        mListView = (ListView) findViewById(R.id.searchListView);
+
+
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                goToDocumentView(position);
+            }
+        });
+
+        /*mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            int firstVisibleItem;
+            int visibleItemCount;
+            int totalItemCount;
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                // if the end of the scrollbar is reached
+                if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE &&
+                        (firstVisibleItem + visibleItemCount) == ((currentResultsPage + 1) * resultsPerPage )){
+                    currentResultsPage += 1;
+                    mProgressBar.setVisibility(View.VISIBLE);
+                    Log.d(TAG, "Time to load new results!");
+                    Log.d(TAG, lastQuery);
+                    //getNewResults
+                    //new GetSearchResults().execute(lastQuery);
+                    //appendThemToTheListView
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                this.firstVisibleItem = firstVisibleItem;
+                this.visibleItemCount = visibleItemCount;
+                this.totalItemCount = totalItemCount;
+            }
+
+        });*/
+    }
+
     // Creates an asynchronous task that gets the queries fedora for the results to the search
     private class GetSearchResults extends AsyncTask<String, Integer, List<Document>>{
+
+        boolean appendToList = false;
+
+        public void updateGetSearchResults(boolean appendToList){
+            this.appendToList = appendToList;
+        }
 
         protected List<Document> doInBackground(String... queries){
             try {
 
                 String query = queries[0];
 
-                String solrQuery = queryManager.constructSolrQuery(query);
+                String solrQuery = queryManager.constructSolrQuery(query, currentResultsPage, resultsPerPage);
 
                 InputStream responseStream = queryManager.queryDigitalRepositoryAsync((String) solrQuery);
 
@@ -153,20 +203,15 @@ public class SearchActivity extends AppCompatActivity {
 
 
     private void setListToRetrievedDocuments(List<Document> documentsRetrieved) {
-        if(documentsRetrieved.size() != 0) {
-            this.documentsRetrieved = documentsRetrieved;
+        this.documentsRetrieved = documentsRetrieved;
+        if (documentsRetrieved.size() == 0 && adapter != null){
+            adapter.clear();
+            adapter.notifyDataSetChanged();
+        }
+        else if(documentsRetrieved.size() != 0) {
+
             String[] documentIds = new String[documentsRetrieved.size()];
-            /*int i = 0;
-            for( Document doc : documentsRetrieved ){
-                documentIds[i] = doc.getText();//.substring(0, charsInListItemString) + "...";
-                i++;
-            }
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                    SearchActivity.this,
-                    android.R.layout.simple_list_item_1,
-                    documentIds
-            );*/
-            SearchResultsAdapter adapter = new SearchResultsAdapter(this, documentsRetrieved);
+            adapter = new SearchResultsAdapter(this, documentsRetrieved);
             mListView.setAdapter(adapter);
         }
         else{

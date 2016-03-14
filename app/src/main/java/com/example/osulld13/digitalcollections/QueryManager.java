@@ -23,10 +23,17 @@ public class QueryManager {
 
     private final String TAG = QueryManager.class.getSimpleName();
 
-    public String constructSolrQuery(String freeQuery){
-        String query = "http://library02.tchpc.tcd.ie:8080/solr/dris/select?indent=on&version=2.2&q=subject_lctgm%3A[*%20TO%20*]&fq=" +
+    public String constructSolrQuery(String freeQuery, int page, int rowsPerPage){
+
+        String start = String.valueOf(page * rowsPerPage);
+        String rows = String.valueOf(rowsPerPage);
+
+        String query = "http://library02.tchpc.tcd.ie:8080/solr/dris/select?indent=on&version=2.2&q=subject_lctgm%3A[*%20TO%20*]&" +
+                "fq=" +
                 urlQueryAdapter(freeQuery) +
-                "&start=0&rows=15&fl=*%2Cscore&qt=standard&wt=standard&explainOther=&hl.fl=";
+                "&start=" + start +
+                "&rows="+ rows +
+                "&fl=*%2Cscore&qt=standard&wt=standard&explainOther=&hl.fl=";
         return query;
     }
 
@@ -78,7 +85,7 @@ public class QueryManager {
             url = getResourceThumbnailLargerURL(pid);
         }
 
-        Log.d(TAG, url.toString());
+        //Log.d(TAG, url.toString());
         Bitmap bmp = null;
         try {
             // Make sure image complies with memory limits
