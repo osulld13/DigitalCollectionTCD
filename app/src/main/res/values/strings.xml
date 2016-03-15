@@ -23,4 +23,10 @@
     <string name="detail_view_language_label">Language:</string>
     <string name="detail_view_abstract_label">Abstract:</string>
     <string name="detail_view_access_condition_label">Access Condition:</string>
+    <string name="no_suggestions">There are no suggestions for you at the moment!</string>
+    <string name="popular_tab_title">Popular</string>
+    <string name="suggested_tab_title">Suggested</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
