@@ -22,9 +22,9 @@
 
             <ProgressBar
                 android:id="@+id/searchProgressBar"
-                android:layout_gravity="right"
+                android:layout_gravity="right|center_vertical"
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="25dp"
                 style="@android:style/Widget.ProgressBar"
                 android:paddingRight="6dp">
             </ProgressBar>

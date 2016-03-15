@@ -71,7 +71,7 @@
             android:id="@+id/documentViewProgressBar"
             android:layout_gravity="center"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="25dp"
             style="@android:style/Widget.ProgressBar"
             android:paddingRight="6dp">
         </ProgressBar>

@@ -113,9 +113,6 @@ public class SearchActivity extends AppCompatActivity {
                 if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE &&
                         (firstVisibleItem + visibleItemCount) >= (((currentResultsPage + 1) * resultsPerPage)) - searchResultsPaginateDistance) {
                     currentResultsPage += 1;
-                    Log.d(TAG, "Time to load new results!");
-                    Log.d(TAG, lastQuery);
-                    Log.d(TAG, String.valueOf(currentQueryId));
                     GetSearchResults getSearchResults = new GetSearchResults();
                     getSearchResults.updateGetSearchResults(true, currentQueryId, currentResultsPage);
                     getSearchResults.execute(lastQuery);
