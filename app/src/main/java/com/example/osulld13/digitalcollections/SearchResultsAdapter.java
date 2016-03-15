@@ -1,7 +1,6 @@
 package com.example.osulld13.digitalcollections;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,10 +23,16 @@ import java.util.List;
 public class SearchResultsAdapter extends ArrayAdapter<Document> {
 
     private QueryManager mQueryManager;
+    private int mLayout;
+    private int mImageSize;
+    private int mBackground;
 
-    public SearchResultsAdapter(Context context, List<Document> results){
+    public SearchResultsAdapter(Context context, List<Document> results, int layout, int imageSize, int background){
         super(context, 0, results);
         mQueryManager = new QueryManager();
+        mLayout = layout;
+        mImageSize = imageSize;
+        mBackground = background;
     }
 
     @Override
@@ -36,23 +41,28 @@ public class SearchResultsAdapter extends ArrayAdapter<Document> {
         Document document = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
         if(convertView == null){
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_search_result, parent, false);
+            convertView = LayoutInflater.from(getContext()).inflate(mLayout, parent, false);
         }
         //assign imageView early to prevent scrolling effect
-        ImageView mImageView = (ImageView) convertView.findViewById(R.id.searchResultImageView);
+        ImageView mImageView = (ImageView) convertView.findViewById(R.id.imageView);
         mImageView.setImageResource(R.drawable.background_place_holder_image_dark);
-        mImageView.setImageBitmap(BitmapFactory.decodeResource(getContext().getResources(), R.drawable.background_place_holder_image_light));
+        if (mBackground == AppConstants.backGroundLight) {
+            mImageView.setImageBitmap(BitmapFactory.decodeResource(getContext().getResources(), R.drawable.background_place_holder_image_light));
+        }
+        else if (mBackground == AppConstants.backGroundLight){
+            mImageView.setImageBitmap(BitmapFactory.decodeResource(getContext().getResources(), R.drawable.background_place_holder_image_dark));
+        }
         //Unique tag is added to each image to be checked again when adding the image in the thumbnail request
         mImageView.setTag(String.valueOf(position));
         // Lookup view for data population
-        TextView mTitle = (TextView) convertView.findViewById(R.id.searchResultTitleTextView);
-        TextView mSubText = (TextView) convertView.findViewById(R.id.searchResultSubTextView);
+        TextView mTitle = (TextView) convertView.findViewById(R.id.titleTextView);
+        TextView mSubText = (TextView) convertView.findViewById(R.id.subTextView);
         // Populate the data into the template view using the data object
         mTitle.setText(capitalize(document.getText()));
         mSubText.setText(capitalize(document.getGenre()));
         // Get thumbnail image from url
         GetThumbnailImage getThumbnailImage = new GetThumbnailImage();
-        getThumbnailImage.updateInfoSyncTask(document.getPid(), mImageView, mQueryManager, 0, (String) mImageView.getTag()); // get small thumbnail
+        getThumbnailImage.updateInfoSyncTask(document.getPid(), mImageView, mQueryManager, mImageSize, (String) mImageView.getTag()); // get small thumbnail
         getThumbnailImage.execute();
         // Return the completed view to render on screen
         return convertView;

@@ -1,6 +1,5 @@
 package com.example.osulld13.digitalcollections;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -8,7 +7,6 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.AbsListView;
@@ -16,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
-import android.widget.Toast;
 
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -210,8 +207,7 @@ public class SearchActivity extends AppCompatActivity {
         }
         else if(documentsRetrieved.size() != 0) {
             this.documentsRetrieved = documentsRetrieved;
-            String[] documentIds = new String[documentsRetrieved.size()];
-            adapter = new SearchResultsAdapter(this, documentsRetrieved);
+            adapter = new SearchResultsAdapter(this, documentsRetrieved, R.layout.item_search_result, 0, AppConstants.backGroundLight);
             mListView.setAdapter(adapter);
         }
     }

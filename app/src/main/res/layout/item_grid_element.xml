@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="@color/gridElementBackground"
     android:padding="5dp">
-
 
     <RelativeLayout
         android:id="@+id/imageContainer"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
+        android:layout_width="fill_parent"
+        android:layout_height="140dp"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:background="@android:color/black"
-        android:layout_marginRight="10dp">
+        android:background="@android:color/black">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -26,29 +25,29 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text=""
+        android:text="Small Text"
         android:textColor="@android:color/black"
         android:id="@+id/titleTextView"
-        android:layout_alignTop="@+id/imageContainer"
-        android:layout_toRightOf="@+id/imageContainer"
-        android:layout_toEndOf="@+id/imageContainer"
-        android:layout_marginTop="10dp"
+        android:layout_below="@+id/imageContainer"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
         android:maxLines="1"
-        android:ellipsize="end"
-        android:padding="3dp"/>
+        android:ellipsize="end"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text=""
+        android:text="New Text"
+        android:textColor="@color/gridSubTitleColor"
         android:id="@+id/subTextView"
         android:layout_below="@+id/titleTextView"
-        android:layout_toRightOf="@+id/imageContainer"
-        android:layout_toEndOf="@+id/imageContainer"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
         android:maxLines="1"
-        android:ellipsize="end"
-        android:padding="3dp"/>
-
+        android:ellipsize="end"/>
 
 </RelativeLayout>

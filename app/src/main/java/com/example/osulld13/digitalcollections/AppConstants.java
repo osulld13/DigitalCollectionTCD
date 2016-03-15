@@ -15,4 +15,6 @@ public class AppConstants {
     public static final String documentDetailTransferString = "documentDetail";
     public static int resultsPerSearchPage = 15;
     public static int searchResultsPaginateDistance = 1;
+    public static int backgroundDark = 0;
+    public static int backGroundLight = 1;
 }
