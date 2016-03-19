@@ -9,8 +9,11 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -26,6 +29,7 @@ public class PopularFragment extends Fragment {
     private AlertDialog.Builder builder;
     private SearchResultsAdapter adapter;
     private ResponseJSONParser responseJSONParser;
+    private ProgressBar mProgressBar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,6 +47,9 @@ public class PopularFragment extends Fragment {
                 goToDocumentView(position);
             }
         });
+
+        mProgressBar = (ProgressBar) rootView.findViewById(R.id.popularProgressBar);
+        mProgressBar.setVisibility(View.INVISIBLE);
 
         /*GetSearchResults getSearchResults = new GetSearchResults();
         getSearchResults.execute("cork");*/
@@ -83,7 +90,7 @@ public class PopularFragment extends Fragment {
         }
 
         protected void onPreExecute(){
-
+            mProgressBar.setVisibility(View.VISIBLE);
         }
 
         protected void onPostExecute (ArrayList<String[]> result) {
@@ -95,6 +102,7 @@ public class PopularFragment extends Fragment {
             }
             // if no result retrieved
             else {
+                mProgressBar.setVisibility(View.INVISIBLE);
                 builder.setMessage(R.string.network_error_message)
                         .setTitle(R.string.network_error_title);
                 builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -140,6 +148,7 @@ public class PopularFragment extends Fragment {
             if(documents != null){
                 setListToRetrievedDocuments(documents, false);
             }
+            mProgressBar.setVisibility(View.INVISIBLE);
         }
 
     }
