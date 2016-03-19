@@ -146,7 +146,7 @@ public class SearchActivity extends AppCompatActivity {
                 }
                 String query = queries[0];
                 String solrQuery = queryManager.constructSolrQuery(query, this.resultsPage, resultsPerPage);
-                InputStream responseStream = queryManager.queryDigitalRepositoryAsync((String) solrQuery);
+                InputStream responseStream = queryManager.queryUrlForDataStream((String) solrQuery);
                 List<Document> documentList = null;
                 try {
                     documentList = responseXMLParser.parseSearchResponse(responseStream);

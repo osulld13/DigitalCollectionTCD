@@ -13,6 +13,135 @@ import java.util.ArrayList;
  */
 public class ResponseJSONParser {
 
+    private final String TAG = ResponseJSONParser.class.getSimpleName();
+
+    public ArrayList parsePopularData(InputStream in )throws IOException {
+        JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
+        try {
+            return readPopularMessage(reader);
+        } finally {
+            reader.close();
+        }
+    }
+
+    private ArrayList readPopularMessage(JsonReader reader) throws IOException {
+        ArrayList<String []> popularObjects = new ArrayList<String []>();
+
+        reader.beginObject();
+        int objectCount = 0;
+        while(reader.hasNext()){
+            String name = reader.nextName();
+            if(name.equals(JSONParsingConstants.objects)){
+                reader.beginArray();
+                while(reader.hasNext()){
+                    if(objectCount < AppConstants.popularItemCount) {
+                        String[] object = readObject(reader);
+                        popularObjects.add(object);
+                        objectCount++;
+                    }
+                    else {
+                        reader.skipValue();
+                    }
+                }
+                reader.endArray();
+            }
+            else {
+                reader.skipValue();
+            }
+        }
+        reader.endObject();
+
+
+        return popularObjects;
+    }
+
+    private String [] readObject(JsonReader reader) throws IOException {
+        String pid = "";
+        String folderId = "";
+
+        reader.beginObject();
+        while(reader.hasNext()){
+            String name = reader.nextName();
+            if(name.equals(JSONParsingConstants.pid)){
+                pid = reader.nextString();
+            }
+            else if (name.equals(JSONParsingConstants.folderId)){
+                folderId = reader.nextString();
+            }
+            else {
+                reader.skipValue();
+            }
+        }
+        reader.endObject();
+
+        String [] object = {pid, folderId};
+
+        return object;
+    }
+
+    public String[] getPopularItemMetadata(InputStream in) throws IOException {
+        JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
+        try {
+            return readPopularMetadata(reader);
+        } finally {
+            reader.close();
+        }
+    }
+
+    private String[] readPopularMetadata(JsonReader reader) throws IOException{
+        String [] metadata = new String[2];
+
+        String genre = "";
+        String title = "";
+
+        // Get values for items
+        reader.beginObject();
+        while(reader.hasNext()){
+            String name = reader.nextName();
+            if (name.equals(JSONParsingConstants.mods)){
+                reader.beginObject();
+                while(reader.hasNext()){
+                    name = reader.nextName();
+                    if(name.equals(JSONParsingConstants.titleInfo)){
+                        title = readTitleInfo(reader, title);
+                    }
+                    else if (name.equals(JSONParsingConstants.genre)){
+                        genre = readGenre(reader);
+                    }
+                    else{
+                        reader.skipValue();
+                    }
+                }
+            }
+            else{
+                reader.skipValue();
+            }
+        }
+
+        metadata[0] = genre;
+        metadata[1] = title;
+
+        return metadata;
+    }
+
+    private String readGenre(JsonReader reader) throws IOException {
+        String genre ="";
+
+        reader.beginObject();
+        while(reader.hasNext()){
+            String name = reader.nextName();
+            if(name.equals(JSONParsingConstants.dollar)){
+                genre = reader.nextString();
+            }
+            else {
+                reader.skipValue();
+            }
+        }
+        reader.endObject();;
+
+        return genre;
+    }
+
     public ArrayList parseMetadata(InputStream in) throws IOException {
         JsonReader reader = new JsonReader(new InputStreamReader(in, "UTF-8"));
         try {

@@ -20,5 +20,8 @@ public class JSONParsingConstants {
     public static final String accessCondition = "accessCondition";
     public static final String text = "text";
     public static final String type = "type";
-
+    public static final String objects = "objects";
+    public static final String pid = "pid";
+    public static final String folderId = "folder_id";
+    public static final String genre = "genre";
 }

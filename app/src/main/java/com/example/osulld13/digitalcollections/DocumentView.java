@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,12 +19,9 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
 
@@ -329,7 +325,7 @@ public class DocumentView extends AppCompatActivity {
                 }
                 String listQuery = mQueryManager.constructListOfObjectsInCollectionQuery(info[0]);
                 //Log.d(TAG, listQuery);
-                InputStream responseStream = mQueryManager.queryDigitalRepositoryAsync(listQuery);
+                InputStream responseStream = mQueryManager.queryUrlForDataStream(listQuery);
                 String response = null;
                 try {
                     response = mQueryManager.readStringFromInputStream(responseStream);
@@ -405,7 +401,7 @@ public class DocumentView extends AppCompatActivity {
                 }
                 String metadataQuery = mQueryManager.constructDocMetadataQuery(params[0]);
                 //Log.d(TAG, metadataQuery);
-                InputStream responseStream = mQueryManager.queryDigitalRepositoryAsync(metadataQuery);
+                InputStream responseStream = mQueryManager.queryUrlForDataStream(metadataQuery);
 
                 // title, origin_place, publisher, date, language, abstract, access_condition
                 ArrayList<CharSequence> response = null;

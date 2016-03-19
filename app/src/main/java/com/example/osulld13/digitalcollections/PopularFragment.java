@@ -12,24 +12,27 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
-import org.xmlpull.v1.XmlPullParserException;
-
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PopularFragment extends Fragment {
+
+    private final String TAG = PopularFragment.class.getSimpleName();
 
     private GridView mGridView;
     private QueryManager queryManager;
     private List<Document> documentsRetrieved;
     private AlertDialog.Builder builder;
     private SearchResultsAdapter adapter;
+    private ResponseJSONParser responseJSONParser;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_popular, container, false);
 
+        responseJSONParser = new ResponseJSONParser();
         queryManager = new QueryManager();
         builder = new AlertDialog.Builder(getContext());
 
@@ -41,46 +44,37 @@ public class PopularFragment extends Fragment {
             }
         });
 
-        GetSearchResults getSearchResults = new GetSearchResults();
-        getSearchResults.execute("cork");
+        /*GetSearchResults getSearchResults = new GetSearchResults();
+        getSearchResults.execute("cork");*/
+        GetPopularDocuments getPopularDocuments = new GetPopularDocuments();
+        getPopularDocuments.execute();
         return rootView;
     }
 
-    // Test Code taken from SearchActivity
     // Creates an asynchronous task that gets the queries fedora for the results to the search
-    private class GetSearchResults extends AsyncTask<String, Integer, List<Document>> {
+    private class GetPopularDocuments extends AsyncTask<Void, Void, ArrayList<String[]>> {
 
-        // Append to list and query Id will be used if a paging request is being made
-        boolean appendToList = false;
-        int queryId;
-        int resultsPage;
-        int resultsPerPage = 20 ;
-        ResponseXMLParser responseXMLParser = new ResponseXMLParser();
 
-        public void updateGetSearchResults(boolean appendToList, int queryId, int resultsPage){
-            this.appendToList = appendToList;
-            this.queryId = queryId;
-            this.resultsPage = resultsPage;
-        }
-
-        protected List<Document> doInBackground(String... queries){
+        protected ArrayList<String[]> doInBackground(Void... params){
             try {
                 if (android.os.Debug.isDebuggerConnected()) {
                     android.os.Debug.waitForDebugger();
                 }
-                String query = queries[0];
-                String solrQuery = queryManager.constructSolrQuery(query, this.resultsPage, resultsPerPage);
-                InputStream responseStream = queryManager.queryDigitalRepositoryAsync((String) solrQuery);
-                List<Document> documentList = null;
+                String query = queryManager.constructPopularItemsQuery();
+                InputStream responseStream = queryManager.queryUrlForDataStream((String) query);
+                ArrayList<String[]> documentList = null;
                 try {
-                    documentList = responseXMLParser.parseSearchResponse(responseStream);
+                    //documentList = responseXMLParser.parseSearchResponse(responseStream);
+                    //String response = queryManager.readStringFromInputStream(responseStream);
+                    //Log.d(TAG, response);
+                    documentList = responseJSONParser.parsePopularData(responseStream);
                 } catch (java.io.IOException e){
                     // Add error dialogue
                     e.printStackTrace();
-                } catch (XmlPullParserException e){
+                }/* catch (XmlPullParserException e){
                     // Add error dialogue
                     e.printStackTrace();
-                }
+                }*/
                 // Assign the retrieved documents to the documentsRetrieved List
                 return documentList;
             } catch (java.lang.RuntimeException e){
@@ -88,11 +82,16 @@ public class PopularFragment extends Fragment {
             }
         }
 
-        protected void onPostExecute (List<Document> result) {
+        protected void onPreExecute(){
+
+        }
+
+        protected void onPostExecute (ArrayList<String[]> result) {
             // if result retrieved
             if (result != null) {
-                //Turn Progress indicator off
-                setListToRetrievedDocuments(result, this.appendToList, this.queryId);
+               //Do stuff
+                GetMetadataForPopularDocuments getMetadataForPopularDocuments = new GetMetadataForPopularDocuments();
+                getMetadataForPopularDocuments.execute(result);
             }
             // if no result retrieved
             else {
@@ -109,7 +108,43 @@ public class PopularFragment extends Fragment {
         }
     }
 
-    private void setListToRetrievedDocuments(List<Document> documentsRetrieved, boolean appendToList, int queryId) {
+    private class GetMetadataForPopularDocuments extends AsyncTask<List<String []>, Void, List<Document>>{
+
+        List<String[]> objects;
+
+        protected List<Document> doInBackground(List<String[]>... params){
+            if (android.os.Debug.isDebuggerConnected()) {
+                android.os.Debug.waitForDebugger();
+            }
+
+            objects = params[0];
+
+            List<Document> result = new ArrayList<Document>();
+
+            for(String [] object : params[0]){
+                String query = queryManager.constructDocMetadataQuery(object[0]);
+                InputStream responseStream = queryManager.queryUrlForDataStream((String) query);
+                String [] documentMedata = {"", ""};
+                try {
+                    documentMedata = responseJSONParser.getPopularItemMetadata(responseStream);
+                }catch (java.io.IOException e){
+                    return null;
+                }
+                Document doc = new Document(object[0], object[1], documentMedata[0], documentMedata[1]);
+                result.add(doc);
+            }
+            return result;
+        }
+
+        protected void onPostExecute(List<Document> documents){
+            if(documents != null){
+                setListToRetrievedDocuments(documents, false);
+            }
+        }
+
+    }
+
+    private void setListToRetrievedDocuments(List<Document> documentsRetrieved, boolean appendToList) {
         // if this is the first search
         if (documentsRetrieved.size() == 0 && adapter != null){
             adapter.clear();

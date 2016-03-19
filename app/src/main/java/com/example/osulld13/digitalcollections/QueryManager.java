@@ -47,6 +47,11 @@ public class QueryManager {
         return query;
     }
 
+    public String constructPopularItemsQuery(){
+        String query = "http://46.101.47.238/";
+        return query;
+    }
+
     public Bitmap getImageResource(String drisFolderNum, String pid){
         URL url = getImageResourceURL(drisFolderNum, pid);
         Bitmap bmp = null;
@@ -195,7 +200,7 @@ public class QueryManager {
         return url;
     }
 
-    public InputStream queryDigitalRepositoryAsync(String url){
+    public InputStream queryUrlForDataStream(String url){
 
         // Have one (or more) threads ready to do the async tasks. Do this during startup of your app.
         ExecutorService executor = Executors.newFixedThreadPool(1);

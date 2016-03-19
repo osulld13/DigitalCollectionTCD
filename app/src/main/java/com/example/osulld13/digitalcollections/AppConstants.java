@@ -17,4 +17,5 @@ public class AppConstants {
     public static int searchResultsPaginateDistance = 1;
     public static int backgroundDark = 0;
     public static int backGroundLight = 1;
+    public static int popularItemCount = 20;
 }
