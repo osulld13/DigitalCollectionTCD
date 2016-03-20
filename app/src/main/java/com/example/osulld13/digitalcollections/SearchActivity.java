@@ -1,6 +1,5 @@
 package com.example.osulld13.digitalcollections;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -179,11 +178,10 @@ public class SearchActivity extends AppCompatActivity {
         protected void onPostExecute (List<Document> result) {
             // if result retrieved
             if (result != null) {
-                //Turn Progress indicator off
                 setListToRetrievedDocuments(result, this.appendToList, this.queryId);
-                // Write query to database
-                SQLiteDatabase db = mDbHelper.getWritableDatabase();
-                ContentValues values = new ContentValues();
+                if (!result.isEmpty()) {
+                    writeSearchToDatabase(query);
+                }
             }
             // if no result retrieved
             else {
@@ -201,6 +199,13 @@ public class SearchActivity extends AppCompatActivity {
         }
     }
 
+    private void writeSearchToDatabase(String query) {
+        // Write query to database
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DigitalCollectionsContract.CollectionQuery.COLUMN_NAME_TEXT, query);
+        long newRowId = db.insert(DigitalCollectionsContract.CollectionQuery.TABLE_NAME, null, values);
+    }
 
     private void setListToRetrievedDocuments(List<Document> documentsRetrieved, boolean appendToList, int queryId) {
         // if this is the first search

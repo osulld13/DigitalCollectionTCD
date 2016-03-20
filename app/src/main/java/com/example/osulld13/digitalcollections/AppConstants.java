@@ -18,4 +18,6 @@ public class AppConstants {
     public static int backgroundDark = 0;
     public static int backGroundLight = 1;
     public static int popularItemCount = 20;
+    public static int numberOfSearchesForSuggestions = 5;
+    public static int resultsPerSuggestion = 4;
 }

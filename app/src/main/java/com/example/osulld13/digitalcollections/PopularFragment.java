@@ -9,11 +9,9 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 
 import java.io.InputStream;
 import java.util.ArrayList;

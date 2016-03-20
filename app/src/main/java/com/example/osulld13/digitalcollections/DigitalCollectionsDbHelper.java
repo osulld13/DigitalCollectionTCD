@@ -22,7 +22,7 @@ public class DigitalCollectionsDbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(DigitalCollectionsContract.SQL_CREATE_QUERIES);
-        //Log.d(TAG, DigitalCollectionsContract.SQL_CREATE_QUERIES);
+        Log.d(TAG, DigitalCollectionsContract.SQL_CREATE_QUERIES);
     }
 
     @Override

@@ -26,6 +26,8 @@ public final class DigitalCollectionsContract {
     private static final String CLOSING_PAREN = " )";
     private static final String CREATE_TABLE = "CREATE TABLE ";
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS ";
+    private static final String DEFAULT = " DEFAULT";
+    private static final String CURRENT_TIMESTAMP = " CURRENT_TIMESTAMP";
 
     // Inner class that defines the query table inner contents
     public static abstract class CollectionQuery implements BaseColumns {
@@ -40,7 +42,7 @@ public final class DigitalCollectionsContract {
                     CREATE_TABLE + CollectionQuery.TABLE_NAME + OPENING_PAREN +
                     CollectionQuery._ID + INTEGER_TYPE + PRIMARY_KEY_CONSTRAINT + COMMA_SEP +
                     CollectionQuery.COLUMN_NAME_TEXT + TEXT_TYPE + COMMA_SEP +
-                    CollectionQuery.COLUMN_NAME_TIME + DATETIME_TYPE + CLOSING_PAREN;
+                    CollectionQuery.COLUMN_NAME_TIME + DATETIME_TYPE + DEFAULT + CURRENT_TIMESTAMP + CLOSING_PAREN;
 
     public static final String SQL_DELETE_QUERIES =
             DROP_TABLE + CollectionQuery.TABLE_NAME;
