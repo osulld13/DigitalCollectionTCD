@@ -1,7 +1,10 @@
 package com.example.osulld13.digitalcollections;
 
+import android.app.Activity;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -33,6 +36,7 @@ public class SearchActivity extends AppCompatActivity {
     private ListView mListView;
     private AlertDialog.Builder builder;
     private ProgressBar mProgressBar;
+    private DigitalCollectionsDbHelper mDbHelper;
 
     private int currentQueryId = 0;
     private int currentResultsPage = 0;
@@ -57,6 +61,8 @@ public class SearchActivity extends AppCompatActivity {
         mSearchBar.onActionViewExpanded();
         // Initialize Query constructor
         queryManager = new QueryManager();
+        // Initialize dbManager
+        mDbHelper = new DigitalCollectionsDbHelper(SearchActivity.this);
         // Initialize response XML parser
         responseXMLParser = new ResponseXMLParser();
         //InitializeListView
@@ -132,6 +138,7 @@ public class SearchActivity extends AppCompatActivity {
         boolean appendToList = false;
         int queryId;
         int resultsPage;
+        String query;
 
         public void updateGetSearchResults(boolean appendToList, int queryId, int resultsPage){
             this.appendToList = appendToList;
@@ -144,7 +151,7 @@ public class SearchActivity extends AppCompatActivity {
                 if (android.os.Debug.isDebuggerConnected()) {
                     android.os.Debug.waitForDebugger();
                 }
-                String query = queries[0];
+                query = queries[0];
                 String solrQuery = queryManager.constructSolrQuery(query, this.resultsPage, resultsPerPage);
                 InputStream responseStream = queryManager.queryUrlForDataStream((String) solrQuery);
                 List<Document> documentList = null;
@@ -174,6 +181,9 @@ public class SearchActivity extends AppCompatActivity {
             if (result != null) {
                 //Turn Progress indicator off
                 setListToRetrievedDocuments(result, this.appendToList, this.queryId);
+                // Write query to database
+                SQLiteDatabase db = mDbHelper.getWritableDatabase();
+                ContentValues values = new ContentValues();
             }
             // if no result retrieved
             else {
