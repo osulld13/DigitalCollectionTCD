@@ -37,13 +37,38 @@ public final class DigitalCollectionsContract {
         public static final String COLUMN_NAME_TIME = "time";
     }
 
-    // SQL commands
+    // SQL commands for query table
     public static final String SQL_CREATE_QUERIES =
-                    CREATE_TABLE + CollectionQuery.TABLE_NAME + OPENING_PAREN +
-                    CollectionQuery._ID + INTEGER_TYPE + PRIMARY_KEY_CONSTRAINT + COMMA_SEP +
-                    CollectionQuery.COLUMN_NAME_TEXT + TEXT_TYPE + COMMA_SEP +
-                    CollectionQuery.COLUMN_NAME_TIME + DATETIME_TYPE + DEFAULT + CURRENT_TIMESTAMP + CLOSING_PAREN;
+                CREATE_TABLE + CollectionQuery.TABLE_NAME + OPENING_PAREN +
+                CollectionQuery._ID + INTEGER_TYPE + PRIMARY_KEY_CONSTRAINT + COMMA_SEP +
+                CollectionQuery.COLUMN_NAME_TEXT + TEXT_TYPE + COMMA_SEP +
+                CollectionQuery.COLUMN_NAME_TIME + DATETIME_TYPE + DEFAULT + CURRENT_TIMESTAMP + CLOSING_PAREN;
 
     public static final String SQL_DELETE_QUERIES =
             DROP_TABLE + CollectionQuery.TABLE_NAME;
+
+    // Inner class that defines the query table inner contents
+    public static abstract class CollectionBookmark implements BaseColumns {
+        // Table and Column names
+        public static final String TABLE_NAME = "bookmark";
+        public static final String COLUMN_NAME_PID = "pid";
+        public static final String COLUMN_NAME_FOLDER_NUMBER = "folderNumber";
+        public static final String COLUMN_NAME_TITLE = "title";
+        public static final String COLUMN_NAME_GENRE = "genre";
+        public static final String COLUMN_NAME_TIME = "time";
+    }
+
+    // SQL commands for bookmark table
+    public static final String SQL_CREATE_BOOKMARKS =
+                CREATE_TABLE + CollectionBookmark.TABLE_NAME + OPENING_PAREN +
+                CollectionBookmark._ID + INTEGER_TYPE + PRIMARY_KEY_CONSTRAINT + COMMA_SEP +
+                CollectionBookmark.COLUMN_NAME_PID + TEXT_TYPE + COMMA_SEP +
+                CollectionBookmark.COLUMN_NAME_FOLDER_NUMBER + TEXT_TYPE + COMMA_SEP +
+                CollectionBookmark.COLUMN_NAME_TITLE + TEXT_TYPE + COMMA_SEP +
+                CollectionBookmark.COLUMN_NAME_GENRE + TEXT_TYPE + COMMA_SEP +
+                CollectionBookmark.COLUMN_NAME_TIME + DATETIME_TYPE + DEFAULT + CURRENT_TIMESTAMP + CLOSING_PAREN;
+
+    public static final String SQL_DELETE_BOOKMARKS =
+            DROP_TABLE + CollectionBookmark.TABLE_NAME;
+
 }

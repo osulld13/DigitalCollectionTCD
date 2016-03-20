@@ -1,7 +1,10 @@
 package com.example.osulld13.digitalcollections;
 
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -18,10 +21,12 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import uk.co.senab.photoview.PhotoViewAttacher;
 
@@ -34,6 +39,7 @@ public class DocumentView extends AppCompatActivity {
     private PhotoViewAttacher mAttacher;
     private ImageView mImageView;
     private QueryManager mQueryManager = new QueryManager();
+    private DigitalCollectionsDbHelper mDbHelper;
     private ProgressBar mProgressBar;
     private AlertDialog.Builder builder;
     private TextView mTextView;
@@ -69,6 +75,8 @@ public class DocumentView extends AppCompatActivity {
         mTextView = (TextView) findViewById(R.id.docViewTextView);
         mSeekBarTextView = (TextView) findViewById((R.id.seekBarTextView));
         mTitleTextView = (TextView) findViewById(R.id.docViewTitleTextView);
+
+        mDbHelper = new DigitalCollectionsDbHelper(DocumentView.this);
 
         initializeDocImage();
 
@@ -458,6 +466,10 @@ public class DocumentView extends AppCompatActivity {
             case R.id.action_detail_view:
                 startDetailViewActivity();
                 return true;
+            case R.id.action_bookmark:
+                BookmarkDocTask bookmarkDocTask = new BookmarkDocTask();
+                bookmarkDocTask.execute();
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -468,6 +480,56 @@ public class DocumentView extends AppCompatActivity {
             Intent documentDetailViewIntent = new Intent(this, DocumentDetailViewActivity.class);
             documentDetailViewIntent.putCharSequenceArrayListExtra(AppConstants.documentDetailTransferString, documentMetadata);
             startActivity(documentDetailViewIntent);
+        }
+    }
+
+    private class BookmarkDocTask extends AsyncTask<Void, Void, Boolean>{
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            return bookmarkDoc();
+        }
+
+        @Override
+        protected void onPostExecute(Boolean bookmarked){
+            if(bookmarked){
+                Toast.makeText(DocumentView.this, "Bookmark Added!", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(DocumentView.this, "This item has already been bookmarked", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private boolean bookmarkDoc(){
+
+        while (documentMetadata ==  null){}
+
+        SQLiteDatabase db;// Read out database
+        db = mDbHelper.getReadableDatabase();
+
+        String[] projection = {DigitalCollectionsContract.CollectionBookmark.COLUMN_NAME_PID};
+        String selection = DigitalCollectionsContract.CollectionBookmark.COLUMN_NAME_PID;
+        String[] selectionVals = {docInfo[0]};
+        String sortOrder = DigitalCollectionsContract.CollectionBookmark.COLUMN_NAME_TIME + " DESC";
+        String query = "SELECT pid FROM bookmark WHERE pid=\"" + docInfo[0] + "\" ORDER BY time DESC";
+
+        Cursor c = db.rawQuery(query, null);
+
+        int index = c.getColumnIndex(DigitalCollectionsContract.CollectionBookmark.COLUMN_NAME_PID);
+
+        if(c.moveToNext()){
+            return false;
+        }
+
+        else {
+            db = mDbHelper.getWritableDatabase();
+            ContentValues values = new ContentValues();
+            values.put(DigitalCollectionsContract.CollectionBookmark.COLUMN_NAME_PID, docInfo[0]);
+            values.put(DigitalCollectionsContract.CollectionBookmark.COLUMN_NAME_FOLDER_NUMBER, docInfo[1]);
+            values.put(DigitalCollectionsContract.CollectionBookmark.COLUMN_NAME_TITLE, (String) documentMetadata.get(0));
+            values.put(DigitalCollectionsContract.CollectionBookmark.COLUMN_NAME_GENRE, docInfo[3]);
+            long newRowId = db.insert(DigitalCollectionsContract.CollectionBookmark.TABLE_NAME, null, values);
+            return true;
         }
     }
 
