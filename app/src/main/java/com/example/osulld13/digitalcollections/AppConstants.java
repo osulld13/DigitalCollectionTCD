@@ -20,4 +20,5 @@ public class AppConstants {
     public static int popularItemCount = 20;
     public static int numberOfSearchesForSuggestions = 5;
     public static int resultsPerSuggestion = 4;
+    public static String BookmarksActivityTitle = "Bookmarks";
 }

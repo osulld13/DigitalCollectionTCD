@@ -78,10 +78,16 @@ public class MainActivity extends AppCompatActivity {
                 startSearchActivity();
                 return true;
             case R.id.action_bookmarks:
+                startBookmarksActivity();
                 return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void startBookmarksActivity() {
+        Intent searchIntent = new Intent(this, BookmarksActivity.class);
+        startActivity(searchIntent);
     }
 
     public void startSearchActivity(){

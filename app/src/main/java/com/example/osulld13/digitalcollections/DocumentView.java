@@ -33,6 +33,7 @@ import uk.co.senab.photoview.PhotoViewAttacher;
 public class DocumentView extends AppCompatActivity {
 
     private final String TAG = DocumentView.class.getSimpleName();
+
     private String[] docInfo; // Pid, DrisFolderNumber, Text, Genre, Lang, TypeOfResource
     ArrayList<String> docPageIds;
     ArrayList<CharSequence> documentMetadata; // title, origin_place, publisher, date, language, abstract, access_condition
