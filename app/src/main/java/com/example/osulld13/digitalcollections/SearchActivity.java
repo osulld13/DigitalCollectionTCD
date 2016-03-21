@@ -86,7 +86,6 @@ public class SearchActivity extends AppCompatActivity {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                // TODO: Implement search suggestions
                 return false;
             }
         });
@@ -205,6 +204,7 @@ public class SearchActivity extends AppCompatActivity {
         ContentValues values = new ContentValues();
         values.put(DigitalCollectionsContract.CollectionQuery.COLUMN_NAME_TEXT, query);
         long newRowId = db.insert(DigitalCollectionsContract.CollectionQuery.TABLE_NAME, null, values);
+        db.close();
     }
 
     private void setListToRetrievedDocuments(List<Document> documentsRetrieved, boolean appendToList, int queryId) {

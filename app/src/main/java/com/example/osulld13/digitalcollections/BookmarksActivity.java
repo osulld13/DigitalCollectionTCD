@@ -10,11 +10,14 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +28,9 @@ public class BookmarksActivity extends AppCompatActivity {
 
     private ListView mListView;
     private ProgressBar mProgressBar;
-    private DigitalCollectionsDbHelper mDbHelper;
     private ArrayList<Document> bookmarks;
     private SearchResultsAdapter adapter;
+    private DigitalCollectionsDbHelper mDbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,11 +46,48 @@ public class BookmarksActivity extends AppCompatActivity {
                 goToDocumentView(position);
             }
         });
+        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                PopupMenu popupMenu = new PopupMenu(BookmarksActivity.this, view);
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.action_delete_bookmark:
+                                deleteBookmark(position);
+                                Toast.makeText(BookmarksActivity.this, "Bookmark Removed", Toast.LENGTH_SHORT).show();
+                                return true;
+                        }
+                        return false;
+                    }
+                });
+                popupMenu.inflate(R.menu.menu_bookmark_options);
+                popupMenu.show();
+                return true;
+            }
+        });
+
         mDbHelper = new DigitalCollectionsDbHelper(BookmarksActivity.this);
         mProgressBar = (ProgressBar) findViewById(R.id.bookmarkProgressBar);
         mProgressBar.setVisibility(View.INVISIBLE);
         GetBookmarksTask getBookmarksTask = new GetBookmarksTask();
         getBookmarksTask.execute();
+    }
+
+    private void deleteBookmark(int position) {
+        // Delete from database
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        db.delete(
+                DigitalCollectionsContract.CollectionBookmark.TABLE_NAME,
+                DigitalCollectionsContract.CollectionBookmark.COLUMN_NAME_PID + " = ?",
+                new String[]{bookmarks.get(position).getPid()}
+        );
+        db.close();
+        // Delete from list
+        bookmarks.remove(position);
+        adapter.notifyDataSetChanged();
     }
 
     private void setUpToolbar() {
@@ -97,6 +137,9 @@ public class BookmarksActivity extends AppCompatActivity {
             String genre = c.getString(indexGenre);
             bookmarks.add(new Document(pid, folder, title, genre));
         }
+
+        c.close();
+        db.close();
 
         return bookmarks;
     }

@@ -100,6 +100,8 @@ public class SuggestedFragment extends Fragment {
                 retrievedQueries ++;
             }
         }
+        c.close();
+        db.close();
         return previousQueries;
     }
 
